@@ -418,7 +418,7 @@ export function Services() {
             <ul className="mt-4 space-y-2">
               <li className="flex items-center text-gray-600">
                 <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
-                <span>Custom menu planning</span>
+                <span>Custom menu</span>
               </li>
               <li className="flex items-center text-gray-600">
                 <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
@@ -426,7 +426,7 @@ export function Services() {
               </li>
               <li className="flex items-center text-gray-600">
                 <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
-                <span>Delivery and setup</span>
+                <span>Delivery</span>
               </li>
             </ul>
             
