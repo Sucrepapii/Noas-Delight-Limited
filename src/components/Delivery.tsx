@@ -19,7 +19,7 @@ export function Delivery() {
             <div className="mt-8 space-y-6">
               <div className="flex items-start">
                 <div className="flex-shrink-0 mt-1">
-                  <TruckIcon size={24} className="text-emerald-600" />
+                  <TruckIcon size={24} className="text-orange-600" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-lg font-medium text-gray-900">
@@ -34,7 +34,7 @@ export function Delivery() {
               
               <div className="flex items-start">
                 <div className="flex-shrink-0 mt-1">
-                  <ClockIcon size={24} className="text-emerald-600" />
+                  <ClockIcon size={24} className="text-orange-600" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-lg font-medium text-gray-900">
@@ -49,7 +49,7 @@ export function Delivery() {
               
               <div className="flex items-start">
                 <div className="flex-shrink-0 mt-1">
-                  <PackageIcon size={24} className="text-emerald-600" />
+                  <PackageIcon size={24} className="text-orange-600" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-lg font-medium text-gray-900">
@@ -64,7 +64,7 @@ export function Delivery() {
               
               <div className="flex items-start">
                 <div className="flex-shrink-0 mt-1">
-                  <MapPinIcon size={24} className="text-emerald-600" />
+                  <MapPinIcon size={24} className="text-orange-600" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-lg font-medium text-gray-900">
@@ -85,7 +85,7 @@ export function Delivery() {
                 rel="noopener noreferrer"
                 className="inline-block"
               >
-                <button className="bg-emerald-600 text-white px-6 py-3 rounded-md font-medium hover:bg-emerald-700 transition-colors flex items-center">
+                <button className="bg-orange-600 text-white px-6 py-3 rounded-md font-medium hover:bg-orange-700 transition-colors flex items-center">
                   Check Delivery Areas
                   <MapPinIcon size={18} className="ml-2" />
                 </button>
@@ -97,7 +97,7 @@ export function Delivery() {
                 rel="noopener noreferrer"
                 className="inline-block"
               >
-                <button className="bg-white text-emerald-600 border border-emerald-600 px-6 py-3 rounded-md font-medium hover:bg-emerald-50 transition-colors flex items-center">
+                <button className="bg-white text-orange-600 border border-orange-600 px-6 py-3 rounded-md font-medium hover:bg-orange-50 transition-colors flex items-center">
                   Delivery Inquiry
                   <TruckIcon size={18} className="ml-2" />
                 </button>
@@ -113,7 +113,7 @@ export function Delivery() {
             />
             <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium">Fast Delivery</span>
               </div>
               <p className="text-xs text-gray-500 mt-1">

@@ -239,7 +239,7 @@ const OrderFormIndividual = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-xl font-bold text-emerald-600 text-center">Place Your Order</h2>
+      <h2 className="text-xl font-bold text-orange-600 text-center">Place Your Order</h2>
 
       <input 
         name="name" 
@@ -323,7 +323,7 @@ const OrderFormIndividual = () => {
       <button 
         type="button" 
         onClick={addItemToOrder} 
-        className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 transition"
+        className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition"
       >
         Add to Order
       </button>
@@ -361,7 +361,7 @@ const OrderFormIndividual = () => {
 
       <button 
         type="submit" 
-        className="w-full bg-emerald-600 text-white font-bold py-3 rounded hover:bg-emerald-700 transition"
+        className="w-full bg-orange-600 text-white font-bold py-3 rounded hover:bg-orange-700 transition"
       >
         Submit Order
       </button>
@@ -390,7 +390,7 @@ export function Services() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <section id="services" className="py-16 bg-emerald-50">
+    <section id="services" className="py-16 bg-orange-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -404,8 +404,8 @@ export function Services() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Individual Catering */}
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
-              <Users2Icon size={24} className="text-emerald-600" />
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+              <Users2Icon size={24} className="text-orange-600" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900">
               Individual Catering
@@ -417,22 +417,22 @@ export function Services() {
             </p>
             <ul className="mt-4 space-y-2">
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Custom menu</span>
               </li>
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Dietary accommodations</span>
               </li>
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Delivery</span>
               </li>
             </ul>
             
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="mt-6 bg-emerald-600 text-white px-4 py-2 rounded-md text-sm hover:bg-emerald-700 transition-colors"
+              className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors"
             >
               Book Now
             </button>
@@ -440,8 +440,8 @@ export function Services() {
           
           {/* Event Catering */}
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
-              <CalendarIcon size={24} className="text-emerald-600" />
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+              <CalendarIcon size={24} className="text-orange-600" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900">
               Event Catering
@@ -452,20 +452,20 @@ export function Services() {
             </p>
             <ul className="mt-4 space-y-2">
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Professional serving staff</span>
               </li>
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Buffet or plated service</span>
               </li>
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Event coordination</span>
               </li>
             </ul>
             <a href="https://forms.gle/pThaZWnfJS8G6ZpA8" target="_blank" rel="noopener noreferrer">
-              <button className="mt-6 bg-emerald-600 text-white px-4 py-2 rounded-md text-sm hover:bg-emerald-700 transition-colors">
+              <button className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
                 Plan Your Event
               </button>
             </a>
@@ -473,8 +473,8 @@ export function Services() {
           
           {/* Online Booking */}
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
-              <ChefHatIcon size={24} className="text-emerald-600" />
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+              <ChefHatIcon size={24} className="text-orange-600" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900">
               Online Booking
@@ -485,20 +485,20 @@ export function Services() {
             </p>
             <ul className="mt-4 space-y-2">
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Simple online form</span>
               </li>
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Fast response time</span>
               </li>
               <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full mr-2"></span>
+                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
                 <span>Personalized service</span>
               </li>
             </ul>
             <a href="https://wa.me/447405336637" target="_blank" rel="noopener noreferrer">
-              <button className="mt-6 bg-emerald-600 text-white px-4 py-2 rounded-md text-sm hover:bg-emerald-700 transition-colors">
+              <button className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
                 Get a Quote
               </button>
             </a>

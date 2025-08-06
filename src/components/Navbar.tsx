@@ -7,32 +7,32 @@ export function Navbar() {
       <div className="flex justify-between items-center h-16">
         {/* Logo */}
         <div className="flex-shrink-0 flex items-center">
-          <h1 className="text-2xl font-bold text-emerald-600">
-            Noa's Delights
+          <h1 className="text-2xl font-bold text-orange-600">
+            Noa's Delights Ltd
           </h1>
         </div>
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
-          <a href="#" className="text-gray-700 hover:text-emerald-600 font-medium">
+          <a href="#" className="text-gray-700 hover:text-orange-600 font-medium">
             Home
           </a>
-          <a href="#food-bowls" className="text-gray-700 hover:text-emerald-600 font-medium">
+          <a href="#food-bowls" className="text-gray-700 hover:text-orange-600 font-medium">
             Food Bowls
           </a>
-          <a href="#services" className="text-gray-700 hover:text-emerald-600 font-medium">
+          <a href="#services" className="text-gray-700 hover:text-orange-600 font-medium">
             Catering
           </a>
-          <a href="#delivery" className="text-gray-700 hover:text-emerald-600 font-medium">
+          <a href="#delivery" className="text-gray-700 hover:text-orange-600 font-medium">
             Delivery
           </a>
-          <a href="#" className="text-gray-700 hover:text-emerald-600 font-medium">
+          <a href="#" className="text-gray-700 hover:text-orange-600 font-medium">
             Contact
           </a>
         </nav>
         {/* Cart and Mobile Menu Button */}
         <div className="flex items-center">
           <a href="#services">
-            <button className="bg-emerald-100 p-2 rounded-full text-emerald-600 hover:bg-emerald-200 mr-4">
+            <button className="bg-orange-100 p-2 rounded-full text-orange-600 hover:bg-orange-200 mr-4">
               <ShoppingCartIcon size={20} />
             </button>
           </a>

@@ -52,10 +52,10 @@ export function FoodBowls() {
                 </h3>
                 <p className="mt-2 text-gray-600 text-sm">{bowl.description}</p>
                 <div className="mt-4 flex justify-between items-center">
-                  <span className="text-lg font-bold text-emerald-600">
+                  <span className="text-lg font-bold text-orange-600">
                     {bowl.price}
                   </span>
-                  {/* <button className="bg-emerald-600 text-white px-4 py-2 rounded-md text-sm hover:bg-emerald-700 transition-colors">
+                  {/* <button className="bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
                     Add to Cart
                   </button> */}
                 </div>
@@ -64,7 +64,7 @@ export function FoodBowls() {
         </div>
         <div className="mt-12 text-center">
           <a href="/Noa's Delight Ltd.pdf" target="_blank" rel="noopener noreferrer">       
-          <button className="bg-white text-emerald-600 border border-emerald-600 px-6 py-3 rounded-md font-medium hover:bg-emerald-50 transition-colors">
+          <button className="bg-white text-orange-600 border border-orange-600 px-6 py-3 rounded-md font-medium hover:bg-orange-50 transition-colors">
             View All Food Bowls
           </button>
           </a>
