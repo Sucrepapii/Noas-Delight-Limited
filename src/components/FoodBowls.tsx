@@ -4,25 +4,25 @@ const foodBowls = [{
   name: 'Pastries',
   description: 'Each bite is a perfect balance of savory and slightly sweet, wrapped in a buttery crust that melts in your mouth.',
   price: '£25 - £40',
-  image: 'src/assets/3.png'
+  image: '/assets/3.png'
 }, {
   id: 2,
   name: 'Egusi Soup',
   description: 'A heartwarming blend of tender meat, fresh vegetables, and rich spices with a subtle touch of sweetness—comfort in every spoonful.',
   price: '£50 - £80',
-  image: 'src/assets/4.png'
+  image: '/assets/4.png'
 }, {
   id: 3,
   name: 'Small Chops',
   description: 'A delightful assortment of Nigerian snacks, featuring spicy meat pies, crispy spring rolls, and savory puff-puff, perfect for sharing or enjoying solo.',
   price: '£11.99',
-  image: 'src/assets/2.png'
+  image: '/assets/2.png'
 }, {
   id: 4,
   name: 'Smokey Jollof Rice',
   description: 'A delicious West African dish of rice cooked in a savory tomato sauce with spices, offering a sweet, vibrant flavor. Perfectly paired with grilled meats or fried plantains.',
   price: '£40 - £70',
-  image: 'src/assets/5.png'
+  image: '/assets/5.png'
 }];
 export function FoodBowls() {
   return <section id="food-bowls" className="py-16 bg-white">
