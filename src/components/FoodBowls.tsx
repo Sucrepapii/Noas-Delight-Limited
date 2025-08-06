@@ -1,29 +1,34 @@
 import React from 'react';
-const foodBowls = [{
-  id: 1,
-  name: 'Pastries',
-  description: 'Each bite is a perfect balance of savory and slightly sweet, wrapped in a buttery crust that melts in your mouth.',
-  price: '£25 - £40',
-  image: '/assets/3.png'
-}, {
-  id: 2,
-  name: 'Egusi Soup',
-  description: 'A heartwarming blend of tender meat, fresh vegetables, and rich spices with a subtle touch of sweetness—comfort in every spoonful.',
-  price: '£50 - £80',
-  image: '/assets/4.png'
-}, {
-  id: 3,
-  name: 'Small Chops',
-  description: 'A delightful assortment of Nigerian snacks, featuring spicy meat pies, crispy spring rolls, and savory puff-puff, perfect for sharing or enjoying solo.',
-  price: '£11.99',
-  image: '/assets/2.png'
-}, {
-  id: 4,
-  name: 'Smokey Jollof Rice',
-  description: 'A delicious West African dish of rice cooked in a savory tomato sauce with spices, offering a sweet, vibrant flavor. Perfectly paired with grilled meats or fried plantains.',
-  price: '£40 - £70',
-  image: '/assets/5.png'
-}];
+const foodBowls = [
+  {
+    id: 1,
+    name: 'Pastries',
+    description: 'Each bite is a perfect balance of savory and slightly sweet, wrapped in a buttery crust that melts in your mouth.',
+    price: '£25 - £40',
+    image: '/images/3.png' // Now points to public/images/
+  },
+  {
+    id: 2,
+    name: 'Egusi Soup',
+    description: 'A heartwarming blend of tender meat, fresh vegetables, and rich spices with a subtle touch of sweetness—comfort in every spoonful.',
+    price: '£50 - £80',
+    image: '/images/4.png'
+  },
+  {
+    id: 3,
+    name: 'Small Chops',
+    description: 'A delightful assortment of Nigerian snacks, featuring spicy meat pies, crispy spring rolls, and savory puff-puff, perfect for sharing or enjoying solo.',
+    price: '£11.99',
+    image: '/images/2.png'
+  },
+  {
+    id: 4,
+    name: 'Smokey Jollof Rice',
+    description: 'A delicious West African dish of rice cooked in a savory tomato sauce with spices, offering a sweet, vibrant flavor. Perfectly paired with grilled meats or fried plantains.',
+    price: '£40 - £70',
+    image: '/images/5.png'
+  }
+];
 export function FoodBowls() {
   return <section id="food-bowls" className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
