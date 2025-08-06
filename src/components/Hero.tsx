@@ -61,7 +61,7 @@ export function Hero() {
               </div>
             </div>
             <div className="relative h-64 md:h-auto">
-              <img src="../assets/1.png" alt="Colorful food bowl with fresh ingredients" className="rounded-lg shadow-xl w-full h-full object-cover" />
+              <img src="/images/1.png" alt="Colorful food bowl with fresh ingredients" className="rounded-lg shadow-xl w-full h-full object-cover" />
             </div>
           </div>
         </div>
