@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MailIcon, MapPinIcon, InstagramIcon, FacebookIcon, TwitterIcon, XIcon } from 'lucide-react';
+import { MailIcon, MapPinIcon, InstagramIcon, FacebookIcon, TwitterIcon, XIcon, FileText } from 'lucide-react';
 
 export function Footer() {
   const [email, setEmail] = useState('');
@@ -111,6 +111,12 @@ export function Footer() {
                 <MapPinIcon size={18} className="text-orange-400 mt-1 mr-2" />
                 <span className="text-gray-300">
                   Manchester, United Kingdom
+                </span>
+              </li>
+              <li className="flex items-start">
+                <FileText size={18} className="text-orange-400 mt-1 mr-2" />
+                <span className="text-gray-300">
+                  Company No: 15679817
                 </span>
               </li>
             </ul>
@@ -248,8 +254,7 @@ export function Footer() {
                 </p>
                 <p className="mt-2">
                   📧 Email: noadelights@yahoo.com<br />
-                  📍 Address: Manchester, United Kingdom<br />
-                  🏢 Company Number: 15679817
+                  📍 Address: Manchester, United Kingdom
                 </p>
               </div>
             </div>
