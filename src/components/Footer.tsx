@@ -153,13 +153,13 @@ export function Footer() {
             <a href="#" className="text-gray-400 hover:text-orange-400 text-sm">
               Privacy Policy
             </a>
-            <button 
-              onClick={toggleTermsModal} 
+            <button
+              onClick={toggleTermsModal}
               className="text-gray-400 hover:text-orange-400 text-sm"
             >
               Terms of Service
             </button>
-            <button 
+            <button
               onClick={toggleCookieModal}
               className="text-gray-400 hover:text-orange-400 text-sm"
             >
@@ -172,14 +172,14 @@ export function Footer() {
       {/* Terms of Service Modal */}
       {showTermsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div 
+          <div
             ref={termsModalRef}
             className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-orange-400">Terms of Service</h2>
-                <button 
+                <button
                   onClick={toggleTermsModal}
                   className="text-gray-400 hover:text-white"
                 >
@@ -188,7 +188,7 @@ export function Footer() {
               </div>
               <div className="text-gray-300 text-sm space-y-4">
                 <p>Last Updated: {new Date().toLocaleDateString()}</p>
-                
+
                 <h3 className="font-semibold text-white">1. Use of This Website</h3>
                 <p>1.1 The content on this website is for general information only and is subject to change without notice.</p>
                 <p>1.2 Noa's Delight Ltd does not guarantee the accuracy, completeness, or suitability of the information provided.</p>
@@ -212,14 +212,14 @@ export function Footer() {
       {/* Cookie Policy Modal */}
       {showCookieModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div 
+          <div
             ref={cookieModalRef}
             className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-orange-400">Cookie Policy</h2>
-                <button 
+                <button
                   onClick={toggleCookieModal}
                   className="text-gray-400 hover:text-white"
                 >
@@ -228,7 +228,7 @@ export function Footer() {
               </div>
               <div className="text-gray-300 text-sm space-y-4">
                 <p>Last Updated: {new Date().toLocaleDateString()}</p>
-                
+
                 <h3 className="font-semibold text-white">1. What Are Cookies</h3>
                 <p>
                   Cookies are small text files stored on your device when you visit websites.
@@ -248,7 +248,8 @@ export function Footer() {
                 </p>
                 <p className="mt-2">
                   📧 Email: noadelights@yahoo.com<br />
-                  📍 Address: Manchester, United Kingdom
+                  📍 Address: Manchester, United Kingdom<br />
+                  🏢 Company Number: 15679817
                 </p>
               </div>
             </div>
