@@ -12,18 +12,15 @@ export function Footer() {
   // Close modals when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (termsModalRef.current && !termsModalRef.current.contains(event.target)) {
+      if (showTermsModal && termsModalRef.current && !termsModalRef.current.contains(event.target)) {
         setShowTermsModal(false);
       }
-      if (cookieModalRef.current && !cookieModalRef.current.contains(event.target)) {
+      if (showCookieModal && cookieModalRef.current && !cookieModalRef.current.contains(event.target)) {
         setShowCookieModal(false);
       }
     };
 
-    if (showTermsModal || showCookieModal) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -179,7 +176,35 @@ export function Footer() {
             ref={termsModalRef}
             className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto"
           >
-            {/* ... (existing terms modal content) ... */}
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-orange-400">Terms of Service</h2>
+                <button 
+                  onClick={toggleTermsModal}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <XIcon size={24} />
+                </button>
+              </div>
+              <div className="text-gray-300 text-sm space-y-4">
+                <p>Last Updated: {new Date().toLocaleDateString()}</p>
+                
+                <h3 className="font-semibold text-white">1. Use of This Website</h3>
+                <p>1.1 The content on this website is for general information only and is subject to change without notice.</p>
+                <p>1.2 Noa's Delight Ltd does not guarantee the accuracy, completeness, or suitability of the information provided.</p>
+
+                <h3 className="font-semibold text-white">2. Orders & Services</h3>
+                <p>2.1 Food orders are subject to availability and delivery restrictions.</p>
+                <p>2.2 We reserve the right to refuse service, cancel orders, or limit quantities at our discretion.</p>
+
+                <h3 className="font-semibold text-white">3. Contact Us</h3>
+                <p>For any questions regarding these Terms, please contact us at:</p>
+                <p className="mt-2">
+                  📧 Email: noadelights@yahoo.com<br />
+                  📍 Address: Manchester, United Kingdom
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -207,8 +232,7 @@ export function Footer() {
                 <h3 className="font-semibold text-white">1. What Are Cookies</h3>
                 <p>
                   Cookies are small text files stored on your device when you visit websites.
-                  They help websites remember information about your visit, which can make
-                  your next visit easier and the site more useful to you.
+                  They help websites remember information about your visit.
                 </p>
 
                 <h3 className="font-semibold text-white">2. How We Use Cookies</h3>
@@ -216,23 +240,9 @@ export function Footer() {
                 <ul className="list-disc pl-6 space-y-2 mt-2">
                   <li><strong>Essential Cookies:</strong> Necessary for the website to function</li>
                   <li><strong>Performance Cookies:</strong> Help us understand how visitors use our site</li>
-                  <li><strong>Functionality Cookies:</strong> Remember your preferences</li>
-                  <li><strong>Marketing Cookies:</strong> Used to track visitors across websites</li>
                 </ul>
 
-                <h3 className="font-semibold text-white">3. Managing Cookies</h3>
-                <p>
-                  You can control and/or delete cookies through your browser settings.
-                  Please note that disabling cookies may affect the functionality of our website.
-                </p>
-
-                <h3 className="font-semibold text-white">4. Changes to This Policy</h3>
-                <p>
-                  We may update our Cookie Policy from time to time. We will notify you
-                  of any changes by posting the new policy on this page.
-                </p>
-
-                <h3 className="font-semibold text-white">5. Contact Us</h3>
+                <h3 className="font-semibold text-white">3. Contact Us</h3>
                 <p>
                   If you have questions about our Cookie Policy, please contact us at:
                 </p>
