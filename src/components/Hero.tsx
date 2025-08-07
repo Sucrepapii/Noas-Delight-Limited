@@ -1,8 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRightIcon, ChevronDownIcon } from 'lucide-react';
 
 export function Hero() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <section className="relative bg-orange-50 overflow-hidden">
@@ -17,7 +32,7 @@ export function Hero() {
                 At Noa's Delight Ltd, we believe food should be more than just a meal, it should be an experience. Born out of a passion for flavor, culture, and quality, Noa's Delight is a proudly local food brand offering mouthwatering dishes and snacks that celebrate authentic taste and homemade goodness.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <div className="relative inline-block">
+                <div className="relative inline-block" ref={dropdownRef}>
                   <button 
                     className="bg-orange-600 text-white px-6 py-3 rounded-md font-medium hover:bg-orange-700 transition-colors flex items-center"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
