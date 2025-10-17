@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Users2Icon, CalendarIcon, ChefHatIcon, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Users2Icon, CalendarIcon, ChefHatIcon, X, ImagesIcon } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import emailjs from '@emailjs/browser';
 
@@ -88,13 +88,35 @@ const menuData: MenuData = {
   ],
 };
 
+// Custom hook for click outside detection
+const useClickOutside = (ref, callback) => {
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        callback();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [ref, callback]);
+};
+
 // Modal component
 const Modal = ({ isOpen, onClose, children }) => {
+  const modalRef = useRef(null);
+  useClickOutside(modalRef, onClose);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+      <div 
+        ref={modalRef}
+        className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
+      >
         <button 
           onClick={onClose} 
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -104,6 +126,99 @@ const Modal = ({ isOpen, onClose, children }) => {
         </button>
         <div className="p-6">
           {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Gallery Modal Component
+const GalleryModal = ({ isOpen, onClose }) => {
+  const galleryRef = useRef(null);
+  useClickOutside(galleryRef, onClose);
+
+  if (!isOpen) return null;
+
+  // Event images with captions
+  const eventImages = [
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.11.jpeg",
+      caption: "Corporate Event Catering"
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (1).jpeg",
+      caption: "Wedding Reception"
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (2).jpeg",
+      caption: "Birthday Celebration"
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (5).jpeg",
+      caption: "Traditional Nigerian Spread"
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (6).jpeg",
+      caption: "Buffet Setup"
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12.jpeg",
+      caption: "Elegant Plating"
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg",
+      caption: "Large Gathering Service"
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.13.jpeg",
+      caption: "Special Occasion Catering"
+    }
+  ];
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div 
+        ref={galleryRef}
+        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto relative"
+      >
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-1"
+          aria-label="Close gallery"
+        >
+          <X size={24} />
+        </button>
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">
+            Our Past Events Gallery
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {eventImages.map((image, index) => (
+              <div key={index} className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white">
+                <div className="relative overflow-hidden">
+                  <img 
+                    src={image.src} 
+                    alt={image.caption}
+                    className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      e.target.src = "https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
+                    }}
+                  />
+                </div>
+                <div className="p-3">
+                  <p className="text-sm font-medium text-gray-700 text-center">
+                    {image.caption}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <p className="text-gray-600 mb-4">
+              Want to see more? Contact us to discuss your event!
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -388,6 +503,7 @@ const OrderFormIndividual = () => {
 // Main Services Component
 export function Services() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   return (
     <section id="services" className="py-16 bg-orange-50">
@@ -464,11 +580,22 @@ export function Services() {
                 <span>Event coordination</span>
               </li>
             </ul>
-            <a href="https://forms.gle/pThaZWnfJS8G6ZpA8" target="_blank" rel="noopener noreferrer">
-              <button className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
-                Plan Your Event
+            
+            <div className="mt-6 flex flex-col gap-3">
+              <a href="https://forms.gle/pThaZWnfJS8G6ZpA8" target="_blank" rel="noopener noreferrer" className="w-full">
+                <button className="w-full bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
+                  Plan Your Event
+                </button>
+              </a>
+              
+              <button 
+                onClick={() => setIsGalleryOpen(true)}
+                className="w-full bg-white text-orange-600 border border-orange-600 px-4 py-2 rounded-md text-sm hover:bg-orange-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <ImagesIcon size={18} />
+                View Past Events
               </button>
-            </a>
+            </div>
           </div>
           
           {/* Online Booking */}
@@ -510,6 +637,9 @@ export function Services() {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <OrderFormIndividual />
       </Modal>
+
+      {/* Modal for Gallery */}
+      <GalleryModal isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} />
     </section>
   );
 }
