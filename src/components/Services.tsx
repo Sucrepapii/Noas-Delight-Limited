@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Users2Icon, CalendarIcon, ChefHatIcon, X, ImagesIcon } from 'lucide-react';
+import { Users2Icon, CalendarIcon, ChefHatIcon, X, ImagesIcon, PlayIcon } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import emailjs from '@emailjs/browser';
 
@@ -42,6 +42,13 @@ type StatusState = {
   message: string;
   isError: boolean;
   whatsappUrl: string;
+};
+
+type MediaItem = {
+  src: string;
+  caption: string;
+  type: 'image' | 'video';
+  thumbnail?: string;
 };
 
 // Menu data
@@ -89,10 +96,10 @@ const menuData: MenuData = {
 };
 
 // Custom hook for click outside detection
-const useClickOutside = (ref, callback) => {
+const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
         callback();
       }
     };
@@ -105,8 +112,8 @@ const useClickOutside = (ref, callback) => {
 };
 
 // Modal component
-const Modal = ({ isOpen, onClose, children }) => {
-  const modalRef = useRef(null);
+const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => void; children: React.ReactNode }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
   useClickOutside(modalRef, onClose);
 
   if (!isOpen) return null;
@@ -132,101 +139,324 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
-// Gallery Modal Component
-const GalleryModal = ({ isOpen, onClose }) => {
-  const galleryRef = useRef(null);
-  useClickOutside(galleryRef, onClose);
+// Media Modal Component for individual media viewing
+const MediaModal = ({ 
+  isOpen, 
+  onClose, 
+  mediaItem 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  mediaItem: MediaItem | null;
+}) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  if (!isOpen) return null;
+  useClickOutside(modalRef, onClose);
 
-  // Event images with captions
-  const eventImages = [
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.11.jpeg",
-      caption: "Corporate Event Catering"
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (1).jpeg",
-      caption: "Wedding Reception"
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (2).jpeg",
-      caption: "Birthday Celebration"
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (5).jpeg",
-      caption: "Traditional Nigerian Spread"
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (6).jpeg",
-      caption: "Buffet Setup"
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12.jpeg",
-      caption: "Elegant Plating"
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg",
-      caption: "Large Gathering Service"
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.13.jpeg",
-      caption: "Special Occasion Catering"
+  // Close video when modal closes
+  useEffect(() => {
+    if (!isOpen && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
     }
-  ];
+  }, [isOpen]);
+
+  if (!isOpen || !mediaItem) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
       <div 
-        ref={galleryRef}
-        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto relative"
+        ref={modalRef}
+        className="max-w-4xl w-full max-h-[90vh] relative"
       >
         <button 
           onClick={onClose} 
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-1"
-          aria-label="Close gallery"
+          className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2"
+          aria-label="Close media"
         >
           <X size={24} />
         </button>
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">
-            Our Past Events Gallery
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {eventImages.map((image, index) => (
-              <div key={index} className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white">
-                <div className="relative overflow-hidden">
-                  <img 
-                    src={image.src} 
-                    alt={image.caption}
-                    className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      // Fallback if image fails to load
-                      e.target.src = "https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
-                    }}
-                  />
-                </div>
-                <div className="p-3">
-                  <p className="text-sm font-medium text-gray-700 text-center">
-                    {image.caption}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <p className="text-gray-600 mb-4">
-              Want to see more? Contact us to discuss your event!
-            </p>
-          </div>
+        
+        <div className="bg-black rounded-lg overflow-hidden">
+          {mediaItem.type === 'image' ? (
+            <img 
+              src={mediaItem.src} 
+              alt={mediaItem.caption}
+              className="w-full h-auto max-h-[80vh] object-contain"
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
+              }}
+            />
+          ) : (
+            <video 
+              ref={videoRef}
+              src={mediaItem.src}
+              controls
+              autoPlay
+              className="w-full h-auto max-h-[80vh] object-contain"
+              poster={mediaItem.thumbnail}
+            >
+              Your browser does not support the video tag.
+            </video>
+          )}
+        </div>
+        
+        <div className="mt-4 text-center">
+          <p className="text-white text-lg font-medium">{mediaItem.caption}</p>
         </div>
       </div>
     </div>
   );
 };
 
-// Order Form Component
+// Gallery Modal Component
+const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<'all' | 'images' | 'videos'>('all');
+
+  useClickOutside(galleryRef, onClose);
+
+  // Food-based thumbnail URLs from Unsplash (fallback images)
+  const foodThumbnails = [
+    "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1980&q=80",
+    "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2065&q=80"
+  ];
+
+  // Event media with captions - mix of images and videos
+  const eventMedia: MediaItem[] = [
+    // Images
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.11.jpeg",
+      caption: "Corporate Event Catering",
+      type: 'image'
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (1).jpeg",
+      caption: "Wedding Reception",
+      type: 'image'
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (2).jpeg",
+      caption: "Birthday Celebration",
+      type: 'image'
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (5).jpeg",
+      caption: "Traditional Nigerian Spread",
+      type: 'image'
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (6).jpeg",
+      caption: "Buffet Setup",
+      type: 'image'
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12.jpeg",
+      caption: "Elegant Plating",
+      type: 'image'
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg",
+      caption: "Large Gathering Service",
+      type: 'image'
+    },
+    {
+      src: "/images/WhatsApp Image 2025-10-16 at 21.57.13.jpeg",
+      caption: "Special Occasion Catering",
+      type: 'image'
+    },
+    // Videos - Using existing images as thumbnails
+    {
+      src: "/videos/video%201%20(1).mp4",
+      caption: "Wedding Event Highlights",
+      type: 'video',
+      thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.11.jpeg"
+    },
+    {
+      src: "/videos/video%201%20(2).mp4",
+      caption: "Corporate Lunch Setup",
+      type: 'video',
+      thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (1).jpeg"
+    },
+    {
+      src: "/videos/video%201%20(3).mp4",
+      caption: "Birthday Party Service",
+      type: 'video',
+      thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (2).jpeg"
+    },
+    {
+      src: "/videos/video%201%20(4).mp4",
+      caption: "Buffet Service in Action",
+      type: 'video',
+      thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg"
+    }
+  ];
+
+  // Filter media based on active filter
+  const filteredMedia = eventMedia.filter(media => {
+    if (activeFilter === 'all') return true;
+    if (activeFilter === 'images') return media.type === 'image';
+    if (activeFilter === 'videos') return media.type === 'video';
+    return true;
+  });
+
+  const handleMediaClick = (media: MediaItem) => {
+    setSelectedMedia(media);
+    setIsMediaModalOpen(true);
+  };
+
+  const handleCloseMediaModal = () => {
+    setIsMediaModalOpen(false);
+    setSelectedMedia(null);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div 
+          ref={galleryRef}
+          className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto relative"
+        >
+          <button 
+            onClick={onClose} 
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-1"
+            aria-label="Close gallery"
+          >
+            <X size={24} />
+          </button>
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">
+              Our Past Events Gallery
+            </h2>
+            
+            {/* Filter buttons */}
+            <div className="flex justify-center mb-6 space-x-4">
+              <button 
+                onClick={() => setActiveFilter('all')}
+                className={`px-4 py-2 rounded-md text-sm transition-colors ${
+                  activeFilter === 'all' 
+                    ? 'bg-orange-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                All Media
+              </button>
+              <button 
+                onClick={() => setActiveFilter('images')}
+                className={`px-4 py-2 rounded-md text-sm transition-colors ${
+                  activeFilter === 'images' 
+                    ? 'bg-orange-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Images
+              </button>
+              <button 
+                onClick={() => setActiveFilter('videos')}
+                className={`px-4 py-2 rounded-md text-sm transition-colors ${
+                  activeFilter === 'videos' 
+                    ? 'bg-orange-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Videos
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredMedia.map((media, index) => (
+                <div 
+                  key={index} 
+                  className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white cursor-pointer group"
+                  onClick={() => handleMediaClick(media)}
+                >
+                  <div className="relative overflow-hidden">
+                    {media.type === 'image' ? (
+                      <img 
+                        src={media.src} 
+                        alt={media.caption}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.src = foodThumbnails[index % foodThumbnails.length];
+                        }}
+                      />
+                    ) : (
+                      <div className="relative">
+                        {/* Use thumbnail for video preview */}
+                        <img 
+                          src={media.thumbnail || foodThumbnails[index % foodThumbnails.length]} 
+                          alt={media.caption}
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.currentTarget.src = foodThumbnails[index % foodThumbnails.length];
+                          }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300">
+                          <div className="bg-white bg-opacity-90 rounded-full p-3 transform group-hover:scale-110 transition-transform duration-300">
+                            <PlayIcon size={24} className="text-orange-600 ml-1" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Media type badge */}
+                    <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                      {media.type === 'image' ? 'IMAGE' : 'VIDEO'}
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <p className="text-sm font-medium text-gray-700 text-center">
+                      {media.caption}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredMedia.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">No media found for the selected filter.</p>
+              </div>
+            )}
+            
+            <div className="text-center mt-8">
+              <p className="text-gray-600 mb-4">
+                Want to see more? Contact us to discuss your event!
+              </p>
+              <a 
+                href="https://wa.me/447405336637" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <FaWhatsapp className="mr-2" />
+                Contact on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Individual Media Modal - This stays open when gallery is open */}
+      <MediaModal 
+        isOpen={isMediaModalOpen} 
+        onClose={handleCloseMediaModal} 
+        mediaItem={selectedMedia}
+      />
+    </>
+  );
+};
+
+// Order Form Component (unchanged)
 const OrderFormIndividual = () => {
+  // ... (OrderFormIndividual component remains exactly the same)
   const [form, setForm] = useState<FormState>({
     name: "",
     phone: "",
@@ -500,7 +730,7 @@ const OrderFormIndividual = () => {
   );
 };
 
-// Main Services Component
+// Main Services Component (unchanged)
 export function Services() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
