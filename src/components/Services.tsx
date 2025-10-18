@@ -139,8 +139,8 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
   );
 };
 
-// Media Modal Component for individual media viewing
-const MediaModal = ({ 
+// Media Modal Component for individual video viewing only
+const VideoModal = ({ 
   isOpen, 
   onClose, 
   mediaItem 
@@ -151,44 +151,50 @@ const MediaModal = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoVisible, setIsVideoVisible] = useState(true);
 
   useClickOutside(modalRef, onClose);
 
-  // Close video when modal closes
+  // When modal closes, reset video state
   useEffect(() => {
-    if (!isOpen && videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
+    if (!isOpen) {
+      setIsVideoVisible(true);
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
     }
   }, [isOpen]);
 
-  if (!isOpen || !mediaItem) return null;
+  if (!isOpen || !mediaItem || mediaItem.type !== 'video') return null;
+
+  const handleCloseVideo = () => {
+   e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    setIsVideoVisible(false);
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50"
+      onClick={onClose}>
       <div 
         ref={modalRef}
         className="max-w-4xl w-full max-h-[90vh] relative"
       >
+        {/* ❌ Now closes just the video, not the whole modal */}
         <button 
-          onClick={onClose} 
+          onClick={handleCloseVideo} 
           className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2"
-          aria-label="Close media"
+          aria-label="Close video"
         >
           <X size={24} />
         </button>
-        
+
         <div className="bg-black rounded-lg overflow-hidden">
-          {mediaItem.type === 'image' ? (
-            <img 
-              src={mediaItem.src} 
-              alt={mediaItem.caption}
-              className="w-full h-auto max-h-[80vh] object-contain"
-              onError={(e) => {
-                e.currentTarget.src = "https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
-              }}
-            />
-          ) : (
+          {isVideoVisible ? (
             <video 
               ref={videoRef}
               src={mediaItem.src}
@@ -199,6 +205,10 @@ const MediaModal = ({
             >
               Your browser does not support the video tag.
             </video>
+          ) : (
+            <div className="w-full h-[300px] flex items-center justify-center text-white">
+              <p>Video closed</p>
+            </div>
           )}
         </div>
         
@@ -210,14 +220,15 @@ const MediaModal = ({
   );
 };
 
+
 // Gallery Modal Component
 const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'all' | 'images' | 'videos'>('all');
 
-  useClickOutside(galleryRef, onClose);
+  // useClickOutside(galleryRef, onClose);
 
   // Food-based thumbnail URLs from Unsplash (fallback images)
   const foodThumbnails = [
@@ -306,12 +317,16 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   });
 
   const handleMediaClick = (media: MediaItem) => {
-    setSelectedMedia(media);
-    setIsMediaModalOpen(true);
+    // Only open modal for videos, not images
+    if (media.type === 'video') {
+      setSelectedMedia(media);
+      setIsVideoModalOpen(true);
+    }
+    // Images are not clickable - they just show as static images
   };
 
-  const handleCloseMediaModal = () => {
-    setIsMediaModalOpen(false);
+  const handleCloseVideoModal = () => {
+    setIsVideoModalOpen(false);
     setSelectedMedia(null);
   };
 
@@ -348,7 +363,7 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               >
                 All Media
               </button>
-              <button 
+              {/* <button 
                 onClick={() => setActiveFilter('images')}
                 className={`px-4 py-2 rounded-md text-sm transition-colors ${
                   activeFilter === 'images' 
@@ -357,8 +372,8 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 }`}
               >
                 Images
-              </button>
-              <button 
+              </button> */}
+              {/* <button 
                 onClick={() => setActiveFilter('videos')}
                 className={`px-4 py-2 rounded-md text-sm transition-colors ${
                   activeFilter === 'videos' 
@@ -367,27 +382,31 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 }`}
               >
                 Videos
-              </button>
+              </button> */}
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredMedia.map((media, index) => (
                 <div 
                   key={index} 
-                  className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white cursor-pointer group"
+                  className={`overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white ${
+                    media.type === 'video' ? 'cursor-pointer group' : ''
+                  }`}
                   onClick={() => handleMediaClick(media)}
                 >
                   <div className="relative overflow-hidden">
                     {media.type === 'image' ? (
+                      // Images are not clickable
                       <img 
                         src={media.src} 
                         alt={media.caption}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-48 object-cover"
                         onError={(e) => {
                           e.currentTarget.src = foodThumbnails[index % foodThumbnails.length];
                         }}
                       />
                     ) : (
+                      // Videos are clickable
                       <div className="relative">
                         {/* Use thumbnail for video preview */}
                         <img 
@@ -430,33 +449,24 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               <p className="text-gray-600 mb-4">
                 Want to see more? Contact us to discuss your event!
               </p>
-              <a 
-                href="https://wa.me/447405336637" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <FaWhatsapp className="mr-2" />
-                Contact on WhatsApp
-              </a>
+
             </div>
           </div>
         </div>
       </div>
 
-      {/* Individual Media Modal - This stays open when gallery is open */}
-      <MediaModal 
-        isOpen={isMediaModalOpen} 
-        onClose={handleCloseMediaModal} 
+      {/* Video Modal Only - Images cannot be opened */}
+      <VideoModal 
+        isOpen={isVideoModalOpen} 
+        onClose={handleCloseVideoModal} 
         mediaItem={selectedMedia}
       />
     </>
   );
 };
 
-// Order Form Component (unchanged)
+// Order Form Component (unchanged - same as before)
 const OrderFormIndividual = () => {
-  // ... (OrderFormIndividual component remains exactly the same)
   const [form, setForm] = useState<FormState>({
     name: "",
     phone: "",
