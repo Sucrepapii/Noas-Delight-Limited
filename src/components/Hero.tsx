@@ -48,7 +48,7 @@ export function Hero() {
               <XIcon size={20} />
             </button>
             
-            {/* Modal Content */}
+            {/* holiday Content */}
             <div className="p-1">
               <img 
                 src="/images/december.jpeg" // Fixed the path - removed "public"
