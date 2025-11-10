@@ -12,7 +12,7 @@ export function Hero() {
     const timer = setTimeout(() => {
       setShowModal(true);
     }, 1000);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -47,12 +47,12 @@ export function Hero() {
             >
               <XIcon size={20} />
             </button>
-            
+
             {/* holiday Content */}
             <div className="p-1">
-              <img 
+              <img
                 src="/images/december.jpeg" // Fixed the path - removed "public"
-                alt="Special Offer" 
+                alt="Special Offer"
                 className="w-xfull h-auto rounded-t-lg"
               />
               <div className="p-4 text-center">
@@ -64,9 +64,11 @@ export function Hero() {
                 </p>
                 <button
                   onClick={closeModal}
-                  className="bg-orange-600 text-white px-6 py-2 rounded-md font-medium hover:bg-orange-700 transition-colors"
+                  className="bg-orange-600 text-white px-8 py-3 rounded-md font-medium hover:bg-orange-700 transition-colors text-lg"
                 >
-                  Explore Now
+                  <a href="#services" className="text-white hover:text-white font-medium">
+                    Explore Now
+                  </a>
                 </button>
               </div>
             </div>
@@ -88,19 +90,19 @@ export function Hero() {
                 </p>
                 <div className="mt-8 flex flex-wrap gap-4">
                   <div className="relative inline-block" ref={dropdownRef}>
-                    <button 
+                    <button
                       className="bg-orange-600 text-white px-6 py-3 rounded-md font-medium hover:bg-orange-700 transition-colors flex items-center"
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
                       Order Now <ChevronDownIcon size={16} className="ml-2" />
                     </button>
-                    
+
                     {isDropdownOpen && (
                       <div className="absolute left-0 mt-2 w-56 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                         <div className="py-1 flex flex-col space-y-2 p-2">
-                          <a 
-                            href="https://wa.me/447405336637" 
-                            target="_blank" 
+                          <a
+                            href="https://wa.me/447405336637"
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="block"
                           >
@@ -108,9 +110,9 @@ export function Hero() {
                               Book on Whatsapp
                             </button>
                           </a>
-                          <a 
-                            href="https://www.instagram.com/noasdelights?igsh=enJ1OHJqYTQ5b2hp" 
-                            target="_blank" 
+                          <a
+                            href="https://www.instagram.com/noasdelights?igsh=enJ1OHJqYTQ5b2hp"
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="block"
                           >
@@ -122,7 +124,7 @@ export function Hero() {
                       </div>
                     )}
                   </div>
-                  
+
                   <a href="/Noa's Delight Ltd.pdf" target="_blank" rel="noopener noreferrer">
                     <button className="bg-white text-orange-600 border border-orange-600 px-6 py-3 rounded-md font-medium hover:bg-emerald-50 transition-colors">
                       View Menu
