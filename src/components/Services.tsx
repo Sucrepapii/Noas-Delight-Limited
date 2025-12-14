@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Users2Icon, CalendarIcon, ChefHatIcon, X, ImagesIcon, PlayIcon } from 'lucide-react';
+import { Users2Icon, CalendarIcon, ChefHatIcon, X, ImagesIcon, PlayIcon, ChevronLeft, ChevronRight, VolumeX } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import emailjs from '@emailjs/browser';
 
@@ -46,9 +46,7 @@ type StatusState = {
 
 type MediaItem = {
   src: string;
-  caption: string;
   type: 'image' | 'video';
-  thumbnail?: string;
 };
 
 // Menu data
@@ -139,179 +137,149 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
   );
 };
 
-// Media Modal Component for both images and videos
-const MediaModal = ({ 
-  isOpen, 
-  onClose, 
-  mediaItem 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  mediaItem: MediaItem | null;
-}) => {
-  const modalRef = useRef<HTMLDivElement>(null);
+// Custom Video Player Component (muted only, no volume control)
+const CustomVideoPlayer = ({ src }: { src: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useClickOutside(modalRef, onClose);
-
-  // When modal closes, reset video
   useEffect(() => {
-    if (!isOpen && videoRef.current && mediaItem?.type === 'video') {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
+    if (videoRef.current) {
+      // Ensure video is always muted
+      videoRef.current.muted = true;
+      videoRef.current.volume = 0;
+      
+      // Remove any volume controls from the video element
+      const video = videoRef.current;
+      video.removeAttribute('controls');
+      
+      // Create custom controls
+      const playPauseBtn = document.createElement('button');
+      playPauseBtn.className = 'absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-2 rounded-full z-10';
+      playPauseBtn.innerHTML = `
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+        </svg>
+      `;
+      
+      const container = video.parentElement;
+      if (container) {
+        container.style.position = 'relative';
+        playPauseBtn.onclick = () => {
+          if (video.paused) {
+            video.play();
+            playPauseBtn.innerHTML = `
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+            `;
+          } else {
+            video.pause();
+            playPauseBtn.innerHTML = `
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+              </svg>
+            `;
+          }
+        };
+        container.appendChild(playPauseBtn);
+      }
+      
+      // Cleanup
+      return () => {
+        if (playPauseBtn.parentElement) {
+          playPauseBtn.parentElement.removeChild(playPauseBtn);
+        }
+      };
     }
-  }, [isOpen, mediaItem]);
-
-  if (!isOpen || !mediaItem) return null;
+  }, [src]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
-      <div 
-        ref={modalRef}
-        className="max-w-6xl w-full max-h-[90vh] relative"
-      >
-        <button 
-          onClick={onClose} 
-          className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2"
-          aria-label="Close media"
-        >
-          <X size={24} />
-        </button>
-
-        <div className="bg-black rounded-lg overflow-hidden">
-          {mediaItem.type === 'image' ? (
-            <img 
-              src={mediaItem.src} 
-              alt={mediaItem.caption}
-              className="w-full h-auto max-h-[80vh] object-contain"
-              onError={(e) => {
-                // Fallback image if main image fails to load
-                e.currentTarget.src = "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80";
-              }}
-            />
-          ) : (
-            <video 
-              ref={videoRef}
-              src={mediaItem.src}
-              controls
-              autoPlay
-              className="w-full h-auto max-h-[80vh] object-contain"
-              poster={mediaItem.thumbnail}
-            >
-              Your browser does not support the video tag.
-            </video>
-          )}
-        </div>
-        
-        <div className="mt-4 text-center">
-          <p className="text-white text-lg font-medium">{mediaItem.caption}</p>
-          <p className="text-gray-300 text-sm mt-1">
-            {mediaItem.type === 'image' ? 'IMAGE' : 'VIDEO'}
-          </p>
-        </div>
+    <div className="relative w-full">
+      <video
+        ref={videoRef}
+        src={src}
+        muted
+        loop
+        playsInline
+        className="w-full h-auto max-h-[500px] object-contain"
+      />
+      <div className="absolute top-4 left-4">
+        <span className="inline-flex items-center gap-1 bg-gray-900 bg-opacity-70 text-white px-3 py-1 rounded-full text-sm">
+          <VolumeX size={14} />
+          MUTED
+        </span>
       </div>
     </div>
   );
 };
 
-// Gallery Modal Component
-const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const galleryRef = useRef<HTMLDivElement>(null);
-  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+// Gallery Carousel Component
+const EventGallery = () => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState<'all' | 'images' | 'videos'>('all');
 
-  // Food-based thumbnail URLs from Unsplash (fallback images)
-  const foodThumbnails = [
-    "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1980&q=80",
-    "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2065&q=80"
-  ];
-
-  // Event media with captions - mix of images and videos
+  // Event media - mix of images and videos
   const eventMedia: MediaItem[] = [
     // Images
     {
       src: "/images/WhatsApp Image 2025-10-16 at 21.57.11.jpeg",
-      caption: "Corporate Event Catering",
       type: 'image'
     },
     {
       src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (1).jpeg",
-      caption: "Wedding Reception",
       type: 'image'
     },
     {
       src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (2).jpeg",
-      caption: "Birthday Celebration",
       type: 'image'
     },
     {
       src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (5).jpeg",
-      caption: "Traditional Nigerian Spread",
       type: 'image'
     },
     {
       src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (6).jpeg",
-      caption: "Buffet Setup",
       type: 'image'
     },
     {
       src: "/images/WhatsApp Image 2025-10-16 at 21.57.12.jpeg",
-      caption: "Elegant Plating",
       type: 'image'
     },
     {
       src: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg",
-      caption: "Large Gathering Service",
       type: 'image'
     },
     {
       src: "/images/WhatsApp Image 2025-10-16 at 21.57.13.jpeg",
-      caption: "Special Occasion Catering",
       type: 'image'
     },
-     {
+    {
       src: "public/images/bridal shower (2).jpeg",
-      caption: "Bridal Shower Catering",
       type: 'image'
     },
-     {
+    {
       src: "public/images/bridal shower (3).jpeg",
-      caption: "Bridal Shower Catering",
       type: 'image'
     },
-    // Videos - Using existing images as thumbnails
+    // Videos
     {
       src: "/videos/video%201%20(1).mp4",
-      caption: "Wedding Event Highlights",
       type: 'video',
-      thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.11.jpeg"
     },
     {
       src: "/videos/video%201%20(2).mp4",
-      caption: "Corporate Lunch Setup",
       type: 'video',
-      thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (1).jpeg"
     },
     {
       src: "/videos/video%201%20(3).mp4",
-      caption: "Birthday Party Service",
       type: 'video',
-      thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (2).jpeg"
     },
     {
       src: "/videos/video%201%20(4).mp4",
-      caption: "Buffet Service in Action",
       type: 'video',
-      thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg"
     },
     {
       src: "/images/bridal shower (1).mp4",
-      caption: "Service Set-up",
       type: 'video',
-      thumbnail: "/images/bridal shower (1).jpeg"
     }
   ];
 
@@ -323,143 +291,210 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     return true;
   });
 
-  const handleMediaClick = (media: MediaItem) => {
-    setSelectedMedia(media);
-    setIsMediaModalOpen(true);
+  // Reset selected index when filter changes
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [activeFilter]);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        handleNext();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrev();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIndex, filteredMedia.length]);
+
+  const handleNext = () => {
+    if (filteredMedia.length === 0) return;
+    setSelectedIndex((prev) => (prev + 1) % filteredMedia.length);
   };
 
-  const handleCloseMediaModal = () => {
-    setIsMediaModalOpen(false);
-    setSelectedMedia(null);
+  const handlePrev = () => {
+    if (filteredMedia.length === 0) return;
+    setSelectedIndex((prev) => (prev - 1 + filteredMedia.length) % filteredMedia.length);
   };
 
-  if (!isOpen) return null;
+  const handleThumbnailClick = (index: number) => {
+    setSelectedIndex(index);
+  };
+
+  const currentMedia = filteredMedia[selectedIndex];
+  const hasMedia = filteredMedia.length > 0;
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div 
-          ref={galleryRef}
-          className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto relative"
-        >
-          <button 
-            onClick={onClose} 
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-1"
-            aria-label="Close gallery"
-          >
-            <X size={24} />
-          </button>
-          <div className="p-6">
-            <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">
-              Our Past Events Gallery
-            </h2>
-            
-            {/* Filter buttons */}
-            <div className="flex justify-center mb-6 space-x-4">
-              <button 
-                onClick={() => setActiveFilter('all')}
-                className={`px-4 py-2 rounded-md text-sm transition-colors ${
-                  activeFilter === 'all' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                All Media
-              </button>
-              <button 
-                onClick={() => setActiveFilter('images')}
-                className={`px-4 py-2 rounded-md text-sm transition-colors ${
-                  activeFilter === 'images' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Images
-              </button>
-              <button 
-                onClick={() => setActiveFilter('videos')}
-                className={`px-4 py-2 rounded-md text-sm transition-colors ${
-                  activeFilter === 'videos' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Videos
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredMedia.map((media, index) => (
-                <div 
-                  key={index} 
-                  className={`overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white cursor-pointer group`}
-                  onClick={() => handleMediaClick(media)}
-                >
-                  <div className="relative overflow-hidden">
-                    <div className="relative">
-                      {/* Thumbnail image for both images and videos */}
-                      <img 
-                        src={media.type === 'image' ? media.src : (media.thumbnail || foodThumbnails[index % foodThumbnails.length])} 
-                        alt={media.caption}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.currentTarget.src = foodThumbnails[index % foodThumbnails.length];
-                        }}
-                      />
-                      
-                      {/* Overlay for videos */}
-                      {media.type === 'video' && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300">
-                          <div className="bg-white bg-opacity-90 rounded-full p-3 transform group-hover:scale-110 transition-transform duration-300">
-                            <PlayIcon size={24} className="text-orange-600 ml-1" />
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Media type badge */}
-                      <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                        {media.type === 'image' ? 'IMAGE' : 'VIDEO'}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-sm font-medium text-gray-700 text-center">
-                      {media.caption}
-                    </p>
-                    <p className="text-xs text-gray-500 text-center mt-1">
-                      Click to view {media.type === 'image' ? 'larger image' : 'video'}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+    <div className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Our Past Events Gallery
+          </h2>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            Browse through our past catering events and see the quality of our work
+          </p>
+        </div>
 
-            {filteredMedia.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No media found for the selected filter.</p>
+        {/* Filter buttons */}
+        <div className="flex justify-center mb-8 space-x-4">
+          <button 
+            onClick={() => setActiveFilter('all')}
+            className={`px-4 py-2 rounded-md text-sm transition-colors ${
+              activeFilter === 'all' 
+                ? 'bg-orange-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            All Media
+          </button>
+          <button 
+            onClick={() => setActiveFilter('images')}
+            className={`px-4 py-2 rounded-md text-sm transition-colors ${
+              activeFilter === 'images' 
+                ? 'bg-orange-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Images
+          </button>
+          <button 
+            onClick={() => setActiveFilter('videos')}
+            className={`px-4 py-2 rounded-md text-sm transition-colors ${
+              activeFilter === 'videos' 
+                ? 'bg-orange-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Videos
+          </button>
+        </div>
+
+        {/* Main carousel area */}
+        <div className="mb-12">
+          {/* Current item counter */}
+          <div className="text-gray-600 text-center mb-4">
+            <span className="bg-gray-100 px-3 py-1 rounded-full">
+              {selectedIndex + 1} / {filteredMedia.length}
+            </span>
+          </div>
+
+          {/* Main media display */}
+          <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
+            {hasMedia ? (
+              <>
+                {/* Previous button */}
+                <button 
+                  onClick={handlePrev}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all z-10"
+                  aria-label="Previous"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+
+                {/* Media content */}
+                <div className="flex items-center justify-center min-h-[500px]">
+                  {currentMedia.type === 'image' ? (
+                    <img 
+                      src={currentMedia.src} 
+                      alt="Event gallery"
+                      className="w-full h-auto max-h-[500px] object-contain"
+                    />
+                  ) : (
+                    <CustomVideoPlayer src={currentMedia.src} />
+                  )}
+                </div>
+
+                {/* Next button */}
+                <button 
+                  onClick={handleNext}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all z-10"
+                  aria-label="Next"
+                >
+                  <ChevronRight size={24} />
+                </button>
+
+                {/* Media type indicator */}
+                <div className="absolute top-4 right-4">
+                  <span className="inline-block bg-orange-600 text-white px-3 py-1 rounded-full text-sm">
+                    {currentMedia.type === 'image' ? 'IMAGE' : 'VIDEO'}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="text-white text-center py-24">
+                <p className="text-xl">No media found for the selected filter.</p>
               </div>
             )}
-            
-            <div className="text-center mt-8">
-              <p className="text-gray-600 mb-4">
-                Want to see more? Contact us to discuss your event!
-              </p>
-            </div>
           </div>
         </div>
-      </div>
 
-      {/* Media Modal for both images and videos */}
-      <MediaModal 
-        isOpen={isMediaModalOpen} 
-        onClose={handleCloseMediaModal} 
-        mediaItem={selectedMedia}
-      />
-    </>
+        {/* Thumbnail strip */}
+        {hasMedia && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
+              Browse All Media
+            </h3>
+            <div className="flex overflow-x-auto space-x-4 pb-4 px-2">
+              {filteredMedia.map((media, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleThumbnailClick(index)}
+                  className={`flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                    index === selectedIndex 
+                      ? 'border-orange-600 ring-2 ring-orange-400' 
+                      : 'border-transparent hover:border-gray-400'
+                  }`}
+                >
+                  {media.type === 'image' ? (
+                    <img 
+                      src={media.src} 
+                      alt={`Event ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-800 flex items-center justify-center relative">
+                      <div className="flex items-center gap-1">
+                        <PlayIcon size={20} className="text-orange-400" />
+                        <span className="text-white text-xs">MUTED</span>
+                      </div>
+                      <div className="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
+                        VIDEO
+                      </div>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Description */}
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">
+            Use arrow keys or click thumbnails to navigate through our gallery
+          </p>
+          <p className="text-gray-500">
+            Want to see more or discuss your own event? Contact us today!
+          </p>
+          <a 
+            href="https://wa.me/447405336637" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-block mt-6 bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 transition-colors"
+          >
+            Book Your Event
+          </a>
+        </div>
+      </div>
+    </div>
   );
 };
 
-// Order Form Component (unchanged - same as before)
+// Order Form Component
 const OrderFormIndividual = () => {
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -734,146 +769,139 @@ const OrderFormIndividual = () => {
   );
 };
 
-// Main Services Component (unchanged)
+// Main Services Component
 export function Services() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   return (
-    <section id="services" className="py-16 bg-orange-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-            Catering Services
-          </h2>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            From intimate gatherings to large corporate events, we provide
-            exceptional catering services tailored to your needs
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Individual Catering */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-              <Users2Icon size={24} className="text-orange-600" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900">
-              Individual Catering
-            </h3>
-            <p className="mt-2 text-gray-600">
-              Perfect for small gatherings, dinner parties, or intimate
-              celebrations. We create personalized menus tailored to your
-              preferences.
+    <>
+      <section id="services" className="py-16 bg-orange-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              Catering Services
+            </h2>
+            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+              From intimate gatherings to large corporate events, we provide
+              exceptional catering services tailored to your needs
             </p>
-            <ul className="mt-4 space-y-2">
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Custom menu</span>
-              </li>
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Dietary accommodations</span>
-              </li>
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Delivery</span>
-              </li>
-            </ul>
-            
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors"
-            >
-              Book Now
-            </button>
           </div>
-          
-          {/* Event Catering */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-              <CalendarIcon size={24} className="text-orange-600" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900">
-              Event Catering
-            </h3>
-            <p className="mt-2 text-gray-600">
-              Full-service catering for corporate events, weddings, and large
-              gatherings with professional staff and exceptional service.
-            </p>
-            <ul className="mt-4 space-y-2">
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Professional serving staff</span>
-              </li>
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Buffet or plated service</span>
-              </li>
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Event coordination</span>
-              </li>
-            </ul>
-            
-            <div className="mt-6 flex flex-col gap-3">
-              <a href="https://forms.gle/pThaZWnfJS8G6ZpA8" target="_blank" rel="noopener noreferrer" className="w-full">
-                <button className="w-full bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
-                  Plan Your Event
-                </button>
-              </a>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Individual Catering */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                <Users2Icon size={24} className="text-orange-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Individual Catering
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Perfect for small gatherings, dinner parties, or intimate
+                celebrations. We create personalized menus tailored to your
+                preferences.
+              </p>
+              <ul className="mt-4 space-y-2">
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Custom menu</span>
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Dietary accommodations</span>
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Delivery</span>
+                </li>
+              </ul>
               
               <button 
-                onClick={() => setIsGalleryOpen(true)}
-                className="w-full bg-white text-orange-600 border border-orange-600 px-4 py-2 rounded-md text-sm hover:bg-orange-50 transition-colors flex items-center justify-center gap-2"
+                onClick={() => setIsModalOpen(true)}
+                className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors"
               >
-                <ImagesIcon size={18} />
-                View Past Events
+                Book Now
               </button>
             </div>
-          </div>
-          
-          {/* Online Booking */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-              <ChefHatIcon size={24} className="text-orange-600" />
+            
+            {/* Event Catering */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                <CalendarIcon size={24} className="text-orange-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Event Catering
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Full-service catering for corporate events, weddings, and large
+                gatherings with professional staff and exceptional service.
+              </p>
+              <ul className="mt-4 space-y-2">
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Professional serving staff</span>
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Buffet or plated service</span>
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Event coordination</span>
+                </li>
+              </ul>
+              
+              <div className="mt-6 flex flex-col gap-3">
+                <a href="https://forms.gle/pThaZWnfJS8G6ZpA8" target="_blank" rel="noopener noreferrer" className="w-full">
+                  <button className="w-full bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
+                    Plan Your Event
+                  </button>
+                </a>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900">
-              Online Booking
-            </h3>
-            <p className="mt-2 text-gray-600">
-              Easily book our catering services online. Tell us about your event
-              and we'll create a custom proposal for you.
-            </p>
-            <ul className="mt-4 space-y-2">
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Simple online form</span>
-              </li>
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Fast response time</span>
-              </li>
-              <li className="flex items-center text-gray-600">
-                <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                <span>Personalized service</span>
-              </li>
-            </ul>
-            <a href="https://wa.me/447405336637" target="_blank" rel="noopener noreferrer">
-              <button className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
-                Get a Quote
-              </button>
-            </a>
+            
+            {/* Online Booking */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                <ChefHatIcon size={24} className="text-orange-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Online Booking
+              </h3>
+              <p className="mt-2 text-gray-600">
+                Easily book our catering services online. Tell us about your event
+                and we'll create a custom proposal for you.
+              </p>
+              <ul className="mt-4 space-y-2">
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Simple online form</span>
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Fast response time</span>
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
+                  <span>Personalized service</span>
+                </li>
+              </ul>
+              <a href="https://wa.me/447405336637" target="_blank" rel="noopener noreferrer">
+                <button className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
+                  Get a Quote
+                </button>
+              </a>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Modal for Order Form */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <OrderFormIndividual />
-      </Modal>
+        {/* Modal for Order Form */}
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <OrderFormIndividual />
+        </Modal>
+      </section>
 
-      {/* Modal for Gallery */}
-      <GalleryModal isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} />
-    </section>
+      {/* Event Gallery Component */}
+      <EventGallery />
+    </>
   );
 }
