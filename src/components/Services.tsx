@@ -253,11 +253,11 @@ const EventGallery = () => {
       type: 'image'
     },
     {
-      src: "public/images/bridal shower (2).jpeg",
+      src: "/images/bridal shower (2).jpeg",
       type: 'image'
     },
     {
-      src: "public/images/bridal shower (3).jpeg",
+      src: "/images/bridal shower (3).jpeg",
       type: 'image'
     },
     // Videos
