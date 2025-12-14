@@ -139,8 +139,8 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
   );
 };
 
-// Media Modal Component for individual video viewing only
-const VideoModal = ({ 
+// Media Modal Component for both images and videos
+const MediaModal = ({ 
   isOpen, 
   onClose, 
   mediaItem 
@@ -151,50 +151,45 @@ const VideoModal = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isVideoVisible, setIsVideoVisible] = useState(true);
 
   useClickOutside(modalRef, onClose);
 
-  // When modal closes, reset video state
+  // When modal closes, reset video
   useEffect(() => {
-    if (!isOpen) {
-      setIsVideoVisible(true);
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
-      }
-    }
-  }, [isOpen]);
-
-  if (!isOpen || !mediaItem || mediaItem.type !== 'video') return null;
-
-  const handleCloseVideo = () => {
-   e.stopPropagation();
-    if (videoRef.current) {
+    if (!isOpen && videoRef.current && mediaItem?.type === 'video') {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
     }
-    setIsVideoVisible(false);
-  };
+  }, [isOpen, mediaItem]);
+
+  if (!isOpen || !mediaItem) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50"
-      onClick={onClose}>
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
       <div 
         ref={modalRef}
-        className="max-w-4xl w-full max-h-[90vh] relative"
+        className="max-w-6xl w-full max-h-[90vh] relative"
       >
-        {/* ❌ Now closes just the video, not the whole modal */}
         <button 
-          onClick={handleCloseVideo} 
+          onClick={onClose} 
           className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2"
-          aria-label="Close video"
+          aria-label="Close media"
         >
           <X size={24} />
         </button>
 
         <div className="bg-black rounded-lg overflow-hidden">
-          {isVideoVisible ? (
+          {mediaItem.type === 'image' ? (
+            <img 
+              src={mediaItem.src} 
+              alt={mediaItem.caption}
+              className="w-full h-auto max-h-[80vh] object-contain"
+              onError={(e) => {
+                // Fallback image if main image fails to load
+                e.currentTarget.src = "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80";
+              }}
+            />
+          ) : (
             <video 
               ref={videoRef}
               src={mediaItem.src}
@@ -205,30 +200,26 @@ const VideoModal = ({
             >
               Your browser does not support the video tag.
             </video>
-          ) : (
-            <div className="w-full h-[300px] flex items-center justify-center text-white">
-              <p>Video closed</p>
-            </div>
           )}
         </div>
         
         <div className="mt-4 text-center">
           <p className="text-white text-lg font-medium">{mediaItem.caption}</p>
+          <p className="text-gray-300 text-sm mt-1">
+            {mediaItem.type === 'image' ? 'IMAGE' : 'VIDEO'}
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-
 // Gallery Modal Component
 const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'all' | 'images' | 'videos'>('all');
-
-  // useClickOutside(galleryRef, onClose);
 
   // Food-based thumbnail URLs from Unsplash (fallback images)
   const foodThumbnails = [
@@ -281,6 +272,16 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
       caption: "Special Occasion Catering",
       type: 'image'
     },
+     {
+      src: "public/images/bridal shower (2).jpeg",
+      caption: "Bridal Shower Catering",
+      type: 'image'
+    },
+     {
+      src: "public/images/bridal shower (3).jpeg",
+      caption: "Bridal Shower Catering",
+      type: 'image'
+    },
     // Videos - Using existing images as thumbnails
     {
       src: "/videos/video%201%20(1).mp4",
@@ -305,6 +306,12 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
       caption: "Buffet Service in Action",
       type: 'video',
       thumbnail: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg"
+    },
+    {
+      src: "/images/bridal shower (1).mp4",
+      caption: "Service Set-up",
+      type: 'video',
+      thumbnail: "/images/bridal shower (1).jpeg"
     }
   ];
 
@@ -317,16 +324,12 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   });
 
   const handleMediaClick = (media: MediaItem) => {
-    // Only open modal for videos, not images
-    if (media.type === 'video') {
-      setSelectedMedia(media);
-      setIsVideoModalOpen(true);
-    }
-    // Images are not clickable - they just show as static images
+    setSelectedMedia(media);
+    setIsMediaModalOpen(true);
   };
 
-  const handleCloseVideoModal = () => {
-    setIsVideoModalOpen(false);
+  const handleCloseMediaModal = () => {
+    setIsMediaModalOpen(false);
     setSelectedMedia(null);
   };
 
@@ -363,7 +366,7 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               >
                 All Media
               </button>
-              {/* <button 
+              <button 
                 onClick={() => setActiveFilter('images')}
                 className={`px-4 py-2 rounded-md text-sm transition-colors ${
                   activeFilter === 'images' 
@@ -372,8 +375,8 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 }`}
               >
                 Images
-              </button> */}
-              {/* <button 
+              </button>
+              <button 
                 onClick={() => setActiveFilter('videos')}
                 className={`px-4 py-2 rounded-md text-sm transition-colors ${
                   activeFilter === 'videos' 
@@ -382,57 +385,49 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 }`}
               >
                 Videos
-              </button> */}
+              </button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredMedia.map((media, index) => (
                 <div 
                   key={index} 
-                  className={`overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white ${
-                    media.type === 'video' ? 'cursor-pointer group' : ''
-                  }`}
+                  className={`overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white cursor-pointer group`}
                   onClick={() => handleMediaClick(media)}
                 >
                   <div className="relative overflow-hidden">
-                    {media.type === 'image' ? (
-                      // Images are not clickable
+                    <div className="relative">
+                      {/* Thumbnail image for both images and videos */}
                       <img 
-                        src={media.src} 
+                        src={media.type === 'image' ? media.src : (media.thumbnail || foodThumbnails[index % foodThumbnails.length])} 
                         alt={media.caption}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           e.currentTarget.src = foodThumbnails[index % foodThumbnails.length];
                         }}
                       />
-                    ) : (
-                      // Videos are clickable
-                      <div className="relative">
-                        {/* Use thumbnail for video preview */}
-                        <img 
-                          src={media.thumbnail || foodThumbnails[index % foodThumbnails.length]} 
-                          alt={media.caption}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => {
-                            e.currentTarget.src = foodThumbnails[index % foodThumbnails.length];
-                          }}
-                        />
+                      
+                      {/* Overlay for videos */}
+                      {media.type === 'video' && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300">
                           <div className="bg-white bg-opacity-90 rounded-full p-3 transform group-hover:scale-110 transition-transform duration-300">
                             <PlayIcon size={24} className="text-orange-600 ml-1" />
                           </div>
                         </div>
+                      )}
+                      
+                      {/* Media type badge */}
+                      <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                        {media.type === 'image' ? 'IMAGE' : 'VIDEO'}
                       </div>
-                    )}
-                    
-                    {/* Media type badge */}
-                    <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                      {media.type === 'image' ? 'IMAGE' : 'VIDEO'}
                     </div>
                   </div>
                   <div className="p-3">
                     <p className="text-sm font-medium text-gray-700 text-center">
                       {media.caption}
+                    </p>
+                    <p className="text-xs text-gray-500 text-center mt-1">
+                      Click to view {media.type === 'image' ? 'larger image' : 'video'}
                     </p>
                   </div>
                 </div>
@@ -449,16 +444,15 @@ const GalleryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               <p className="text-gray-600 mb-4">
                 Want to see more? Contact us to discuss your event!
               </p>
-
             </div>
           </div>
         </div>
       </div>
 
-      {/* Video Modal Only - Images cannot be opened */}
-      <VideoModal 
-        isOpen={isVideoModalOpen} 
-        onClose={handleCloseVideoModal} 
+      {/* Media Modal for both images and videos */}
+      <MediaModal 
+        isOpen={isMediaModalOpen} 
+        onClose={handleCloseMediaModal} 
         mediaItem={selectedMedia}
       />
     </>
