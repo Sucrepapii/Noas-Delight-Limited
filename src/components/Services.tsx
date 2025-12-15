@@ -140,6 +140,7 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
 // Custom Video Player Component (muted only, no volume control)
 const CustomVideoPlayer = ({ src }: { src: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -150,47 +151,20 @@ const CustomVideoPlayer = ({ src }: { src: string }) => {
       // Remove any volume controls from the video element
       const video = videoRef.current;
       video.removeAttribute('controls');
-      
-      // Create custom controls
-      const playPauseBtn = document.createElement('button');
-      playPauseBtn.className = 'absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-2 rounded-full z-10';
-      playPauseBtn.innerHTML = `
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
-        </svg>
-      `;
-      
-      const container = video.parentElement;
-      if (container) {
-        container.style.position = 'relative';
-        playPauseBtn.onclick = () => {
-          if (video.paused) {
-            video.play();
-            playPauseBtn.innerHTML = `
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-              </svg>
-            `;
-          } else {
-            video.pause();
-            playPauseBtn.innerHTML = `
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
-              </svg>
-            `;
-          }
-        };
-        container.appendChild(playPauseBtn);
-      }
-      
-      // Cleanup
-      return () => {
-        if (playPauseBtn.parentElement) {
-          playPauseBtn.parentElement.removeChild(playPauseBtn);
-        }
-      };
     }
   }, [src]);
+
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      } else {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
 
   return (
     <div className="relative w-full">
@@ -200,8 +174,24 @@ const CustomVideoPlayer = ({ src }: { src: string }) => {
         muted
         loop
         playsInline
-        className="w-full h-auto max-h-[500px] object-contain"
+        className="w-full h-auto max-h-[500px] object-contain cursor-pointer"
+        onClick={togglePlayPause}
       />
+      <button
+        onClick={togglePlayPause}
+        className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all z-10"
+        aria-label={isPlaying ? "Pause" : "Play"}
+      >
+        {isPlaying ? (
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+          </svg>
+        )}
+      </button>
       <div className="absolute top-4 left-4">
         <span className="inline-flex items-center gap-1 bg-gray-900 bg-opacity-70 text-white px-3 py-1 rounded-full text-sm">
           <VolumeX size={14} />
@@ -216,8 +206,10 @@ const CustomVideoPlayer = ({ src }: { src: string }) => {
 const EventGallery = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState<'all' | 'images' | 'videos'>('all');
+  const [videoThumbnails, setVideoThumbnails] = useState<{[key: string]: string}>({});
+  const [loadingThumbnails, setLoadingThumbnails] = useState<{[key: string]: boolean}>({});
 
-  // Event media - mix of images and videos
+  // Event media
   const eventMedia: MediaItem[] = [
     // Images
     {
@@ -283,6 +275,79 @@ const EventGallery = () => {
     }
   ];
 
+  // Function to generate video thumbnail from first frame
+  const generateVideoThumbnail = (videoSrc: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      // Check if thumbnail already exists
+      if (videoThumbnails[videoSrc]) {
+        resolve(videoThumbnails[videoSrc]);
+        return;
+      }
+
+      // Mark as loading
+      setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: true }));
+
+      const video = document.createElement('video');
+      video.crossOrigin = 'anonymous';
+      video.preload = 'metadata';
+      video.muted = true;
+      video.playsInline = true;
+      
+      // Set current time to 0.1 seconds to ensure we get a frame
+      video.currentTime = 0.1;
+      
+      video.onloadeddata = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        
+        // Set canvas dimensions to match video dimensions
+        canvas.width = video.videoWidth || 320;
+        canvas.height = video.videoHeight || 180;
+        
+        // Draw the video frame to canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Convert canvas to data URL
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        
+        // Update state with new thumbnail
+        setVideoThumbnails(prev => ({ ...prev, [videoSrc]: dataUrl }));
+        setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: false }));
+        
+        // Clean up
+        video.remove();
+        resolve(dataUrl);
+      };
+      
+      video.onerror = () => {
+        setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: false }));
+        video.remove();
+        reject(new Error('Failed to load video for thumbnail'));
+      };
+      
+      // Start loading the video
+      video.src = videoSrc;
+    });
+  };
+
+  // Effect to generate thumbnails for videos on component mount
+  useEffect(() => {
+    const videoItems = eventMedia.filter(item => item.type === 'video');
+    
+    videoItems.forEach(item => {
+      if (!videoThumbnails[item.src] && !loadingThumbnails[item.src]) {
+        generateVideoThumbnail(item.src).catch(error => {
+          console.error('Failed to generate thumbnail for:', item.src, error);
+        });
+      }
+    });
+  }, []);
+
   // Filter media based on active filter
   const filteredMedia = eventMedia.filter(media => {
     if (activeFilter === 'all') return true;
@@ -326,6 +391,40 @@ const EventGallery = () => {
 
   const currentMedia = filteredMedia[selectedIndex];
   const hasMedia = filteredMedia.length > 0;
+
+  // Thumbnail component for videos
+  const VideoThumbnail = ({ src }: { src: string }) => {
+    const thumbnail = videoThumbnails[src];
+    const isLoading = loadingThumbnails[src];
+
+    if (isLoading) {
+      return (
+        <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+        </div>
+      );
+    }
+
+    if (thumbnail) {
+      return (
+        <img 
+          src={thumbnail} 
+          alt="Video thumbnail"
+          className="w-full h-full object-cover"
+        />
+      );
+    }
+
+    // Fallback while thumbnail is being generated
+    return (
+      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-white">
+          <PlayIcon size={16} className="text-orange-400" />
+          <span className="text-xs">Loading...</span>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="py-16 bg-white">
@@ -402,6 +501,10 @@ const EventGallery = () => {
                       src={currentMedia.src} 
                       alt="Event gallery"
                       className="w-full h-auto max-h-[500px] object-contain"
+                      onError={(e) => {
+                        // Fallback for broken images
+                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/800x500?text=Image+Not+Found";
+                      }}
                     />
                   ) : (
                     <CustomVideoPlayer src={currentMedia.src} />
@@ -441,9 +544,9 @@ const EventGallery = () => {
             <div className="flex overflow-x-auto space-x-4 pb-4 px-2">
               {filteredMedia.map((media, index) => (
                 <button
-                  key={index}
+                  key={`${media.src}-${index}`}
                   onClick={() => handleThumbnailClick(index)}
-                  className={`flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                  className={`flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden border-2 transition-all relative ${
                     index === selectedIndex 
                       ? 'border-orange-600 ring-2 ring-orange-400' 
                       : 'border-transparent hover:border-gray-400'
@@ -454,16 +557,29 @@ const EventGallery = () => {
                       src={media.src} 
                       alt={`Event ${index + 1}`}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback for broken images
+                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/128x96?text=Image";
+                      }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-800 flex items-center justify-center relative">
-                      <div className="flex items-center gap-1">
-                        <PlayIcon size={20} className="text-orange-400" />
-                        <span className="text-white text-xs">MUTED</span>
+                    <>
+                      <VideoThumbnail src={media.src} />
+                      {/* Video play indicator overlay */}
+                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+                          <PlayIcon size={16} className="text-white ml-0.5" />
+                        </div>
                       </div>
                       <div className="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
                         VIDEO
                       </div>
+                    </>
+                  )}
+                  {/* Selected indicator */}
+                  {index === selectedIndex && (
+                    <div className="absolute top-1 left-1">
+                      <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
                     </div>
                   )}
                 </button>
