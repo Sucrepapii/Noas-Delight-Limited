@@ -6,15 +6,15 @@ export function Hero() {
   const [showModal, setShowModal] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Show modal when component mounts (on every reload)
-  useEffect(() => {
-    // Small delay to ensure the page loads first
-    const timer = setTimeout(() => {
-      setShowModal(true);
-    }, 1000);
+  // // Show modal when component mounts (on every reload)
+  // useEffect(() => {
+  //   // Small delay to ensure the page loads first
+  //   const timer = setTimeout(() => {
+  //     setShowModal(true);
+  //   }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -49,7 +49,7 @@ export function Hero() {
             </button>
 
             {/* holiday Content */}
-            <div className="p-1">
+            {/* <div className="p-1">
               <img
                 src="/images/december.jpeg" // Fixed the path - removed "public"
                 alt="Special Offer"
@@ -71,7 +71,7 @@ export function Hero() {
                   </a>
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
