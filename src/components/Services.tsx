@@ -117,19 +117,19 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-all duration-300">
       <div
         ref={modalRef}
-        className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
+        className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl animate-fade-in-up"
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition-colors p-2 rounded-full hover:bg-gray-100"
           aria-label="Close modal"
         >
           <X size={24} />
         </button>
-        <div className="p-6">
+        <div className="p-8">
           {children}
         </div>
       </div>
@@ -167,19 +167,19 @@ const CustomVideoPlayer = ({ src }: { src: string }) => {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full h-full flex items-center justify-center bg-black">
       <video
         ref={videoRef}
         src={src}
         muted
         loop
         playsInline
-        className="w-full h-auto max-h-[500px] object-contain cursor-pointer"
+        className="w-full h-full max-h-[60vh] object-contain cursor-pointer"
         onClick={togglePlayPause}
       />
       <button
         onClick={togglePlayPause}
-        className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all z-10"
+        className={`absolute bottom-6 left-6 bg-white/20 backdrop-blur-md text-white p-3 rounded-full hover:bg-orange-600 hover:scale-110 transition-all z-10 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
         aria-label={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? (
@@ -193,8 +193,8 @@ const CustomVideoPlayer = ({ src }: { src: string }) => {
         )}
       </button>
       <div className="absolute top-4 left-4">
-        <span className="inline-flex items-center gap-1 bg-gray-900 bg-opacity-70 text-white px-3 py-1 rounded-full text-sm">
-          <VolumeX size={14} />
+        <span className="inline-flex items-center gap-1 bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-white/10">
+          <VolumeX size={12} />
           MUTED
         </span>
       </div>
@@ -212,79 +212,32 @@ const EventGallery = () => {
   // Event media
   const eventMedia: MediaItem[] = [
     // Images
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.11.jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (1).jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (2).jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (5).jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (6).jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.12.jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/WhatsApp Image 2025-10-16 at 21.57.13.jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/bridal shower (2).jpeg",
-      type: 'image'
-    },
-    {
-      src: "/images/bridal shower (3).jpeg",
-      type: 'image'
-    },
+    { src: "/images/WhatsApp Image 2025-10-16 at 21.57.11.jpeg", type: 'image' },
+    { src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (1).jpeg", type: 'image' },
+    { src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (2).jpeg", type: 'image' },
+    { src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (5).jpeg", type: 'image' },
+    { src: "/images/WhatsApp Image 2025-10-16 at 21.57.12 (6).jpeg", type: 'image' },
+    { src: "/images/WhatsApp Image 2025-10-16 at 21.57.12.jpeg", type: 'image' },
+    { src: "/images/WhatsApp Image 2025-10-16 at 21.57.13 (1).jpeg", type: 'image' },
+    { src: "/images/WhatsApp Image 2025-10-16 at 21.57.13.jpeg", type: 'image' },
+    { src: "/images/bridal shower (2).jpeg", type: 'image' },
+    { src: "/images/bridal shower (3).jpeg", type: 'image' },
     // Videos
-    {
-      src: "/videos/video%201%20(1).mp4",
-      type: 'video',
-    },
-    {
-      src: "/videos/video%201%20(2).mp4",
-      type: 'video',
-    },
-    {
-      src: "/videos/video%201%20(3).mp4",
-      type: 'video',
-    },
-    {
-      src: "/videos/video%201%20(4).mp4",
-      type: 'video',
-    },
-    {
-      src: "/images/bridal shower (1).mp4",
-      type: 'video',
-    }
+    { src: "/videos/video%201%20(1).mp4", type: 'video' },
+    { src: "/videos/video%201%20(2).mp4", type: 'video' },
+    { src: "/videos/video%201%20(3).mp4", type: 'video' },
+    { src: "/videos/video%201%20(4).mp4", type: 'video' },
+    { src: "/images/bridal shower (1).mp4", type: 'video' }
   ];
 
   // Function to generate video thumbnail from first frame
   const generateVideoThumbnail = (videoSrc: string): Promise<string> => {
     return new Promise((resolve, reject) => {
-      // Check if thumbnail already exists
       if (videoThumbnails[videoSrc]) {
         resolve(videoThumbnails[videoSrc]);
         return;
       }
 
-      // Mark as loading
       setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: true }));
 
       const video = document.createElement('video');
@@ -292,8 +245,6 @@ const EventGallery = () => {
       video.preload = 'metadata';
       video.muted = true;
       video.playsInline = true;
-
-      // Set current time to 0.1 seconds to ensure we get a frame
       video.currentTime = 0.1;
 
       video.onloadeddata = () => {
@@ -305,23 +256,21 @@ const EventGallery = () => {
           return;
         }
 
-        // Set canvas dimensions to match video dimensions
         canvas.width = video.videoWidth || 320;
         canvas.height = video.videoHeight || 180;
-
-        // Draw the video frame to canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Convert canvas to data URL
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-
-        // Update state with new thumbnail
-        setVideoThumbnails(prev => ({ ...prev, [videoSrc]: dataUrl }));
-        setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: false }));
-
-        // Clean up
-        video.remove();
-        resolve(dataUrl);
+        try {
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setVideoThumbnails(prev => ({ ...prev, [videoSrc]: dataUrl }));
+          setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: false }));
+          video.remove();
+          resolve(dataUrl);
+        } catch (e) {
+          setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: false }));
+          video.remove();
+          reject(e);
+        }
       };
 
       video.onerror = () => {
@@ -330,22 +279,19 @@ const EventGallery = () => {
         reject(new Error('Failed to load video for thumbnail'));
       };
 
-      // Start loading the video
       video.src = videoSrc;
     });
   };
 
-  // Effect to generate thumbnails for videos on component mount
+  // Effect to generate thumbnails
   useEffect(() => {
     const videoItems = eventMedia.filter(item => item.type === 'video');
-
     videoItems.forEach(item => {
       if (!videoThumbnails[item.src] && !loadingThumbnails[item.src]) {
-        generateVideoThumbnail(item.src).catch(error => {
-          console.error('Failed to generate thumbnail for:', item.src, error);
-        });
+        generateVideoThumbnail(item.src).catch(err => console.debug("Thumbnail gen error", err));
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Filter media based on active filter
@@ -361,20 +307,6 @@ const EventGallery = () => {
     setSelectedIndex(0);
   }, [activeFilter]);
 
-  // Handle keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        handleNext();
-      } else if (e.key === 'ArrowLeft') {
-        handlePrev();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedIndex, filteredMedia.length]);
-
   const handleNext = () => {
     if (filteredMedia.length === 0) return;
     setSelectedIndex((prev) => (prev + 1) % filteredMedia.length);
@@ -384,6 +316,18 @@ const EventGallery = () => {
     if (filteredMedia.length === 0) return;
     setSelectedIndex((prev) => (prev - 1 + filteredMedia.length) % filteredMedia.length);
   };
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') handleNext();
+      if (e.key === 'ArrowLeft') handlePrev();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIndex, filteredMedia.length]);
 
   const handleThumbnailClick = (index: number) => {
     setSelectedIndex(index);
@@ -406,126 +350,104 @@ const EventGallery = () => {
     }
 
     if (thumbnail) {
-      return (
-        <img
-          src={thumbnail}
-          alt="Video thumbnail"
-          className="w-full h-full object-cover"
-        />
-      );
+      return <img src={thumbnail} alt="Video thumbnail" className="w-full h-full object-cover" />;
     }
 
-    // Fallback while thumbnail is being generated
     return (
       <div className="w-full h-full bg-gray-800 flex items-center justify-center">
         <div className="flex items-center gap-2 text-white">
           <PlayIcon size={16} className="text-orange-400" />
-          <span className="text-xs">Loading...</span>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-24 bg-gray-900 text-white relative overflow-hidden">
+      {/* Decorative background blobs */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-orange-600/10 rounded-full blur-[100px]"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-            Our Past Events Gallery
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-200">
+            Our Past Events
           </h2>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Browse through our past catering events and see the quality of our work
+          <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
+            Browse through our gallery of exquisite catering moments.
           </p>
         </div>
 
         {/* Filter buttons */}
-        <div className="flex justify-center mb-8 space-x-4">
-          <button
-            onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeFilter === 'all'
-                ? 'bg-orange-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-          >
-            All Media
-          </button>
-          <button
-            onClick={() => setActiveFilter('images')}
-            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeFilter === 'images'
-                ? 'bg-orange-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-          >
-            Images
-          </button>
-          <button
-            onClick={() => setActiveFilter('videos')}
-            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeFilter === 'videos'
-                ? 'bg-orange-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-          >
-            Videos
-          </button>
+        <div className="flex justify-center mb-10 space-x-1 bg-gray-800/50 p-1 rounded-xl inline-flex mx-auto backdrop-blur-sm border border-gray-700">
+          {['all', 'images', 'videos'].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter as any)}
+              className={`px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeFilter === filter
+                ? 'bg-orange-600 text-white shadow-lg'
+                : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                }`}
+            >
+              {filter.charAt(0).toUpperCase() + filter.slice(1)}
+            </button>
+          ))}
         </div>
 
         {/* Main carousel area */}
         <div className="mb-12">
-          {/* Current item counter */}
-          <div className="text-gray-600 text-center mb-4">
-            <span className="bg-gray-100 px-3 py-1 rounded-full">
-              {selectedIndex + 1} / {filteredMedia.length}
-            </span>
-          </div>
-
-          {/* Main media display */}
-          <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
+          <div className="relative bg-black rounded-3xl overflow-hidden shadow-2xl border border-gray-800 aspect-video max-h-[70vh]">
             {hasMedia ? (
               <>
                 {/* Previous button */}
                 <button
                   onClick={handlePrev}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all z-10"
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-4 rounded-full hover:bg-orange-600 transition-all z-20 backdrop-blur-sm group"
                   aria-label="Previous"
                 >
-                  <ChevronLeft size={24} />
+                  <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
                 </button>
 
                 {/* Media content */}
-                <div className="flex items-center justify-center min-h-[500px]">
+                <div className="w-full h-full flex items-center justify-center bg-gray-900">
                   {currentMedia.type === 'image' ? (
                     <img
                       src={currentMedia.src}
                       alt="Event gallery"
-                      className="w-full h-auto max-h-[500px] object-contain"
+                      className="w-full h-full object-contain"
                       onError={(e) => {
-                        // Fallback for broken images
                         (e.target as HTMLImageElement).src = "https://via.placeholder.com/800x500?text=Image+Not+Found";
                       }}
                     />
                   ) : (
-                    <CustomVideoPlayer src={currentMedia.src} />
+                    <div className="w-full h-full flex items-center justify-center">
+                      <CustomVideoPlayer src={currentMedia.src} />
+                    </div>
                   )}
                 </div>
 
                 {/* Next button */}
                 <button
                   onClick={handleNext}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all z-10"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-4 rounded-full hover:bg-orange-600 transition-all z-20 backdrop-blur-sm group"
                   aria-label="Next"
                 >
-                  <ChevronRight size={24} />
+                  <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
                 </button>
 
-                {/* Media type indicator */}
-                <div className="absolute top-4 right-4">
-                  <span className="inline-block bg-orange-600 text-white px-3 py-1 rounded-full text-sm">
+                {/* Counter & Type Badge */}
+                <div className="absolute top-6 right-6 flex items-center gap-3">
+                  <span className="bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-white/10">
+                    {selectedIndex + 1} / {filteredMedia.length}
+                  </span>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-white/10 ${currentMedia.type === 'image' ? 'bg-blue-500/80' : 'bg-red-500/80'}`}>
                     {currentMedia.type === 'image' ? 'IMAGE' : 'VIDEO'}
                   </span>
                 </div>
               </>
             ) : (
-              <div className="text-white text-center py-24">
+              <div className="text-gray-400 text-center py-24 flex flex-col items-center justify-center h-full">
+                <ImagesIcon size={48} className="mb-4 opacity-50" />
                 <p className="text-xl">No media found for the selected filter.</p>
               </div>
             )}
@@ -534,49 +456,35 @@ const EventGallery = () => {
 
         {/* Thumbnail strip */}
         {hasMedia && (
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
-              Browse All Media
-            </h3>
-            <div className="flex overflow-x-auto space-x-4 pb-4 px-2">
+          <div className="mb-12">
+            <div className="flex overflow-x-auto gap-4 pb-4 px-2 scrollbar-hide">
               {filteredMedia.map((media, index) => (
                 <button
                   key={`${media.src}-${index}`}
                   onClick={() => handleThumbnailClick(index)}
-                  className={`flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden border-2 transition-all relative ${index === selectedIndex
-                      ? 'border-orange-600 ring-2 ring-orange-400'
-                      : 'border-transparent hover:border-gray-400'
+                  className={`flex-shrink-0 w-32 h-24 rounded-xl overflow-hidden border-2 transition-all duration-300 relative group ${index === selectedIndex
+                    ? 'border-orange-500 ring-2 ring-orange-500/30 scale-105'
+                    : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                 >
                   {media.type === 'image' ? (
                     <img
                       src={media.src}
                       alt={`Event ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       onError={(e) => {
-                        // Fallback for broken images
                         (e.target as HTMLImageElement).src = "https://via.placeholder.com/128x96?text=Image";
                       }}
                     />
                   ) : (
                     <>
                       <VideoThumbnail src={media.src} />
-                      {/* Video play indicator overlay */}
-                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                        <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
-                          <PlayIcon size={16} className="text-white ml-0.5" />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-orange-600 transition-colors">
+                          <PlayIcon size={14} className="text-white ml-0.5" />
                         </div>
                       </div>
-                      <div className="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
-                        VIDEO
-                      </div>
                     </>
-                  )}
-                  {/* Selected indicator */}
-                  {index === selectedIndex && (
-                    <div className="absolute top-1 left-1">
-                      <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
-                    </div>
                   )}
                 </button>
               ))}
@@ -584,21 +492,15 @@ const EventGallery = () => {
           </div>
         )}
 
-        {/* Description */}
         <div className="text-center">
-          <p className="text-gray-600 mb-4">
-            Use arrow keys or click thumbnails to navigate through our gallery
-          </p>
-          <p className="text-gray-500">
-            Want to see more or discuss your own event? Contact us today!
-          </p>
           <a
             href="https://wa.me/447405336637"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-6 bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 transition-colors"
+            className="inline-flex items-center gap-2 bg-orange-600 text-white px-8 py-4 rounded-full font-bold hover:bg-orange-500 transition-all shadow-lg hover:shadow-orange-600/30 transform hover:-translate-y-1"
           >
-            Book Your Event
+            <CalendarIcon size={20} />
+            Book Your Event Today
           </a>
         </div>
       </div>
@@ -729,148 +631,198 @@ const OrderFormIndividual = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-xl font-bold text-orange-600 text-center">Place Your Order</h2>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900">Place Your Order</h2>
+        <p className="text-gray-500 mt-1">Select your items and we'll handle the rest</p>
+      </div>
 
-      <input
-        name="name"
-        placeholder="Full Name"
-        required
-        onChange={handleChange}
-        value={form.name}
-        className="w-full border px-4 py-2 rounded-md"
-      />
-      <input
-        name="phone"
-        placeholder="Phone Number"
-        required
-        onChange={handleChange}
-        value={form.phone}
-        className="w-full border px-4 py-2 rounded-md"
-      />
-      <input
-        name="email"
-        placeholder="Email"
-        required
-        type="email"
-        onChange={handleChange}
-        value={form.email}
-        className="w-full border px-4 py-2 rounded-md"
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-gray-700">Full Name</label>
+          <input
+            name="name"
+            placeholder="John Doe"
+            required
+            onChange={handleChange}
+            value={form.name}
+            className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 transition-all outline-none"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-gray-700">Phone Number</label>
+          <input
+            name="phone"
+            placeholder="+44 7..."
+            required
+            onChange={handleChange}
+            value={form.phone}
+            className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 transition-all outline-none"
+          />
+        </div>
+      </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value as keyof MenuData)}
-          className="border p-2 rounded"
-        >
-          {Object.keys(menuData).map((cat) => (
-            <option key={cat} value={cat}>
-              {cat.charAt(0).toUpperCase() + cat.slice(1)}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={selectedItem}
-          onChange={(e) => setSelectedItem(e.target.value)}
-          className="border p-2 rounded"
-        >
-          <option value="">Select item</option>
-          {(menuData[selectedCategory] as (SoupOrProteinOrRice | Side)[]).map((item) => (
-            <option key={item.name} value={item.name}>
-              {item.name}
-            </option>
-          ))}
-        </select>
-
-        {selectedItem && (menuData[selectedCategory] as SoupOrProteinOrRice[]).find((i) => i.name === selectedItem)?.sizes ? (
-          <select
-            value={selectedSize}
-            onChange={(e) => setSelectedSize(e.target.value)}
-            className="border p-2 rounded"
-          >
-            <option value="">Select size</option>
-            {Object.keys(
-              ((menuData[selectedCategory] as SoupOrProteinOrRice[])
-                .find((i) => i.name === selectedItem) as SoupOrProteinOrRice).sizes
-            ).map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        ) : null}
-
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">Email Address</label>
         <input
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value) || 1)}
-          className="border p-2 rounded"
+          name="email"
+          placeholder="john@example.com"
+          required
+          type="email"
+          onChange={handleChange}
+          value={form.email}
+          className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 transition-all outline-none"
+        />
+      </div>
+
+      <div className="bg-orange-50 p-6 rounded-xl border border-orange-100 space-y-4">
+        <h3 className="font-bold text-orange-800 text-lg mb-2">Build Your Menu</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-orange-700 uppercase tracking-wider">Category</label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value as keyof MenuData)}
+              className="w-full border border-orange-200 p-3 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none"
+            >
+              {Object.keys(menuData).map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-orange-700 uppercase tracking-wider">Item</label>
+            <select
+              value={selectedItem}
+              onChange={(e) => setSelectedItem(e.target.value)}
+              className="w-full border border-orange-200 p-3 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none"
+            >
+              <option value="">Select item</option>
+              {(menuData[selectedCategory] as (SoupOrProteinOrRice | Side)[]).map((item) => (
+                <option key={item.name} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {selectedItem && (menuData[selectedCategory] as SoupOrProteinOrRice[]).find((i) => i.name === selectedItem)?.sizes ? (
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-orange-700 uppercase tracking-wider">Size</label>
+              <select
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+                className="w-full border border-orange-200 p-3 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none"
+              >
+                <option value="">Select size</option>
+                {Object.keys(
+                  ((menuData[selectedCategory] as SoupOrProteinOrRice[])
+                    .find((i) => i.name === selectedItem) as SoupOrProteinOrRice).sizes
+                ).map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : <div className="hidden md:block"></div>}
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-orange-700 uppercase tracking-wider">Quantity</label>
+            <input
+              type="number"
+              min="1"
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value) || 1)}
+              className="w-full border border-orange-200 p-3 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none"
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={addItemToOrder}
+          className="w-full bg-orange-600 text-white font-bold py-3 rounded-xl hover:bg-orange-700 transition-all shadow-md hover:shadow-lg active:scale-95"
+        >
+          Add to Order
+        </button>
+      </div>
+
+      {form.items.length > 0 && (
+        <div className="bg-gray-50 border border-gray-200 p-6 rounded-xl">
+          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="bg-gray-900 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">£</span>
+            Order Summary
+          </h3>
+          <div className="space-y-3 mb-6">
+            {form.items.map((item, i) => (
+              <div key={i} className="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <span className="bg-orange-100 text-orange-800 font-bold px-2 py-1 rounded text-xs">x{item.quantity}</span>
+                  <span className="font-medium text-gray-800">{item.description}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="font-bold text-gray-900">£{item.price}</span>
+                  <button
+                    type="button"
+                    className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                    onClick={() => removeItem(i)}
+                    aria-label="Remove item"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+            <span className="text-gray-600 font-medium">Total Amount</span>
+            <span className="text-2xl font-extrabold text-orange-600">£{calculateTotal()}</span>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">Delivery Address</label>
+        <textarea
+          name="address"
+          placeholder="Enter full delivery address..."
+          required
+          rows={3}
+          value={form.address}
+          onChange={handleChange}
+          className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 transition-all outline-none resize-none"
         />
       </div>
 
       <button
-        type="button"
-        onClick={addItemToOrder}
-        className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition"
-      >
-        Add to Order
-      </button>
-
-      {form.items.length > 0 && (
-        <div className="border p-4 rounded">
-          <h3 className="font-semibold mb-2">Order Summary</h3>
-          {form.items.map((item, i) => (
-            <div key={i} className="flex justify-between mb-1">
-              <span>{item.description} × {item.quantity}</span>
-              <span>£{item.price}</span>
-              <button
-                type="button"
-                className="text-red-500"
-                onClick={() => removeItem(i)}
-                aria-label="Remove item"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          <div className="font-bold text-right mt-2">Total: £{calculateTotal()}</div>
-        </div>
-      )}
-
-      <textarea
-        name="address"
-        placeholder="Delivery Address"
-        required
-        rows={3}
-        value={form.address}
-        onChange={handleChange}
-        className="w-full border p-3 rounded"
-      />
-
-      <button
         type="submit"
-        className="w-full bg-orange-600 text-white font-bold py-3 rounded hover:bg-orange-700 transition"
+        className="w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition-all shadow-xl hover:shadow-2xl active:scale-95 text-lg"
       >
         Submit Order
       </button>
 
       {status.message && (
-        <p className={`mt-4 text-center ${status.isError ? "text-red-500" : "text-green-600"}`}>
-          {status.message}
-          {status.whatsappUrl && (
-            <a
-              href={status.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-2 inline-flex items-center text-blue-600 hover:underline"
-            >
-              <FaWhatsapp className="mr-1" /> Open WhatsApp
-            </a>
-          )}
-        </p>
+        <div className={`mt-4 p-4 rounded-xl text-center font-medium ${status.isError ? "bg-red-50 text-red-600 border border-red-100" : "bg-green-50 text-green-700 border border-green-100"}`}>
+          <p>
+            {status.message}
+            {status.whatsappUrl && (
+              <a
+                href={status.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors shadow-sm text-sm font-bold ml-2"
+              >
+                <FaWhatsapp className="text-lg" /> Open in WhatsApp
+              </a>
+            )}
+          </p>
+        </div>
       )}
     </form>
   );
@@ -882,118 +834,113 @@ export function Services() {
 
   return (
     <>
-      <section id="services" className="py-16 bg-orange-50">
+      <section id="services" className="py-24 bg-orange-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
               Catering Services
             </h2>
-            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            <div className="w-24 h-1.5 bg-orange-600 mx-auto rounded-full mb-6"></div>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               From intimate gatherings to large corporate events, we provide
-              exceptional catering services tailored to your needs
+              exceptional catering services tailored to your needs.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
             {/* Individual Catering */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <Users2Icon size={24} className="text-orange-600" />
+            <div className="group bg-white p-8 rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full -mr-16 -mt-16 group-hover:bg-orange-100 transition-colors"></div>
+
+              <div className="relative w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-8 rotate-3 group-hover:rotate-6 transition-transform">
+                <Users2Icon size={32} className="text-orange-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">
+
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
                 Individual Catering
               </h3>
-              <p className="mt-2 text-gray-600">
+              <p className="text-gray-600 mb-8 leading-relaxed">
                 Perfect for small gatherings, dinner parties, or intimate
                 celebrations. We create personalized menus tailored to your
                 preferences.
               </p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Custom menu</span>
-                </li>
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Dietary accommodations</span>
-                </li>
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Delivery</span>
-                </li>
+
+              <ul className="mb-8 space-y-4">
+                {['Custom menu', 'Dietary accommodations', 'Delivery'].map((item) => (
+                  <li key={item} className="flex items-center text-gray-700 font-medium">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs mr-3">✓</span>
+                    {item}
+                  </li>
+                ))}
               </ul>
 
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors"
+                className="w-full bg-gray-900 text-white px-6 py-4 rounded-xl font-bold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 group-hover:shadow-lg"
               >
                 Book Now
               </button>
             </div>
 
             {/* Event Catering */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <CalendarIcon size={24} className="text-orange-600" />
+            <div className="group bg-white p-8 rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full -mr-16 -mt-16 group-hover:bg-orange-100 transition-colors"></div>
+
+              <div className="relative w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-8 rotate-3 group-hover:rotate-6 transition-transform">
+                <CalendarIcon size={32} className="text-orange-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">
+
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
                 Event Catering
               </h3>
-              <p className="mt-2 text-gray-600">
+              <p className="text-gray-600 mb-8 leading-relaxed">
                 Full-service catering for corporate events, weddings, and large
                 gatherings with professional staff and exceptional service.
               </p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Professional serving staff</span>
-                </li>
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Buffet or plated service</span>
-                </li>
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Event coordination</span>
-                </li>
+
+              <ul className="mb-8 space-y-4">
+                {['Professional serving staff', 'Buffet or plated service', 'Event coordination'].map((item) => (
+                  <li key={item} className="flex items-center text-gray-700 font-medium">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs mr-3">✓</span>
+                    {item}
+                  </li>
+                ))}
               </ul>
 
-              <div className="mt-6 flex flex-col gap-3">
-                <a href="https://forms.gle/pThaZWnfJS8G6ZpA8" target="_blank" rel="noopener noreferrer" className="w-full">
-                  <button className="w-full bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
-                    Plan Your Event
-                  </button>
-                </a>
-              </div>
+              <a href="https://forms.gle/pThaZWnfJS8G6ZpA8" target="_blank" rel="noopener noreferrer" className="block w-full">
+                <button className="w-full bg-gray-900 text-white px-6 py-4 rounded-xl font-bold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 group-hover:shadow-lg">
+                  Plan Your Event
+                </button>
+              </a>
             </div>
 
             {/* Online Booking */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <ChefHatIcon size={24} className="text-orange-600" />
+            <div className="group bg-white p-8 rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full -mr-16 -mt-16 group-hover:bg-orange-100 transition-colors"></div>
+
+              <div className="relative w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-8 rotate-3 group-hover:rotate-6 transition-transform">
+                <ChefHatIcon size={32} className="text-orange-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">
+
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
                 Online Booking
               </h3>
-              <p className="mt-2 text-gray-600">
+              <p className="text-gray-600 mb-8 leading-relaxed">
                 Easily book our catering services online. Tell us about your event
                 and we'll create a custom proposal for you.
               </p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Simple online form</span>
-                </li>
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Fast response time</span>
-                </li>
-                <li className="flex items-center text-gray-600">
-                  <span className="w-1.5 h-1.5 bg-orange-600 rounded-full mr-2"></span>
-                  <span>Personalized service</span>
-                </li>
+
+              <ul className="mb-8 space-y-4">
+                {['Simple online form', 'Fast response time', 'Personalized service'].map((item) => (
+                  <li key={item} className="flex items-center text-gray-700 font-medium">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs mr-3">✓</span>
+                    {item}
+                  </li>
+                ))}
               </ul>
-              <a href="https://wa.me/447405336637" target="_blank" rel="noopener noreferrer">
-                <button className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
+
+              <a href="https://wa.me/447405336637" target="_blank" rel="noopener noreferrer" className="block w-full">
+                <button className="w-full bg-gray-900 text-white px-6 py-4 rounded-xl font-bold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 group-hover:shadow-lg">
                   Get a Quote
                 </button>
               </a>
