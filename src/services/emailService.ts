@@ -21,3 +21,24 @@ export const sendOrderEmail = async (params: EmailParams): Promise<void> => {
     throw error;
   }
 };
+
+export const sendSubscriptionEmail = async (email: string): Promise<void> => {
+  if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+    console.error("EmailJS environment variables are missing.");
+    throw new Error("Email configuration is missing.");
+  }
+
+  const params = {
+    user_email: email,
+    type: "newsletter_subscription",
+    message: `New subscription request from: ${email}`,
+    to_name: "Admin",
+  };
+
+  try {
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, params, PUBLIC_KEY);
+  } catch (error) {
+    console.error("Failed to send subscription email:", error);
+    throw error;
+  }
+};

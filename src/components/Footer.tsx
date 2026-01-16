@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MailIcon, MapPinIcon, InstagramIcon, FacebookIcon, TwitterIcon, XIcon, FileText } from 'lucide-react';
+import { MailIcon, MapPinIcon, InstagramIcon, FacebookIcon, TwitterIcon, XIcon, FileText, Loader2 } from 'lucide-react';
+import { sendSubscriptionEmail } from '../services/emailService';
 
 export function Footer() {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showCookieModal, setShowCookieModal] = useState(false);
   const termsModalRef = useRef<HTMLDivElement>(null);
@@ -26,13 +29,25 @@ export function Footer() {
     };
   }, [showTermsModal, showCookieModal]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubscribed(true);
-    setEmail('');
-    setTimeout(() => {
-      setIsSubscribed(false);
-    }, 3000);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await sendSubscriptionEmail(email);
+      setIsSubscribed(true);
+      setEmail('');
+      setTimeout(() => {
+        setIsSubscribed(false);
+      }, 5000);
+    } catch (err) {
+      console.error('Subscription error:', err);
+      setError('Failed to subscribe. Please try again later.');
+      setTimeout(() => setError(null), 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleTermsModal = () => {
@@ -143,18 +158,32 @@ export function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-gray-800 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 border border-gray-700 transition-all placeholder-gray-500"
+                  disabled={isSubmitting}
+                  className="w-full px-4 py-3 bg-gray-800 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 border border-gray-700 transition-all placeholder-gray-500 disabled:opacity-50"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full bg-orange-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-orange-500 transition-all shadow-lg hover:shadow-orange-600/30"
+                disabled={isSubmitting}
+                className="w-full bg-orange-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-orange-500 transition-all shadow-lg hover:shadow-orange-600/30 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Subscribe Now
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="animate-spin mr-2" size={20} />
+                    Subscribing...
+                  </>
+                ) : (
+                  'Subscribe Now'
+                )}
               </button>
               {isSubscribed && (
-                <div className="bg-green-500/10 border border-green-500/20 text-green-400 px-3 py-2 rounded-lg text-sm text-center">
+                <div className="bg-green-500/10 border border-green-500/20 text-green-400 px-3 py-2 rounded-lg text-sm text-center animate-in fade-in slide-in-from-top-2">
                   Successfully subscribed!
+                </div>
+              )}
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-2 rounded-lg text-sm text-center animate-in fade-in slide-in-from-top-2">
+                  {error}
                 </div>
               )}
             </form>
