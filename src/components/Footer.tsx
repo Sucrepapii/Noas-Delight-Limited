@@ -9,8 +9,10 @@ export function Footer() {
   const [error, setError] = useState<string | null>(null);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showCookieModal, setShowCookieModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const termsModalRef = useRef<HTMLDivElement>(null);
   const cookieModalRef = useRef<HTMLDivElement>(null);
+  const privacyModalRef = useRef<HTMLDivElement>(null);
 
   // Close modals when clicking outside
   useEffect(() => {
@@ -21,13 +23,16 @@ export function Footer() {
       if (showCookieModal && cookieModalRef.current && !cookieModalRef.current.contains(event.target as Node)) {
         setShowCookieModal(false);
       }
+      if (showPrivacyModal && privacyModalRef.current && !privacyModalRef.current.contains(event.target as Node)) {
+        setShowPrivacyModal(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showTermsModal, showCookieModal]);
+  }, [showTermsModal, showCookieModal, showPrivacyModal]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +61,10 @@ export function Footer() {
 
   const toggleCookieModal = () => {
     setShowCookieModal(!showCookieModal);
+  };
+
+  const togglePrivacyModal = () => {
+    setShowPrivacyModal(!showPrivacyModal);
   };
 
   return (
@@ -197,9 +206,12 @@ export function Footer() {
           </p>
 
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" className="text-gray-500 hover:text-orange-400 transition-colors">
+            <button
+              onClick={togglePrivacyModal}
+              className="text-gray-500 hover:text-orange-400 transition-colors"
+            >
               Privacy Policy
-            </a>
+            </button>
             <button
               onClick={toggleTermsModal}
               className="text-gray-500 hover:text-orange-400 transition-colors"
@@ -307,6 +319,73 @@ export function Footer() {
                   <h3 className="font-bold text-white text-lg">Contact Us</h3>
                   <p>
                     If you have questions about our Cookie Policy, please contact us at:
+                  </p>
+                  <div className="bg-gray-800 p-4 rounded-xl space-y-2">
+                    <p className="flex items-center gap-2"><MailIcon size={16} className="text-orange-500" /> noadelights@yahoo.com</p>
+                    <p className="flex items-center gap-2"><MapPinIcon size={16} className="text-orange-500" /> Manchester, United Kingdom</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Policy Modal */}
+      {showPrivacyModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div
+            ref={privacyModalRef}
+            className="bg-gray-900 border border-gray-800 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+          >
+            <div className="p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-white">Privacy Policy</h2>
+                <button
+                  onClick={togglePrivacyModal}
+                  className="bg-gray-800 hover:bg-gray-700 p-2 rounded-full text-gray-400 hover:text-white transition-colors"
+                >
+                  <XIcon size={20} />
+                </button>
+              </div>
+              <div className="text-gray-300 space-y-6 leading-relaxed">
+                <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700/50">
+                  <p className="text-sm">Last Updated: {new Date().toLocaleDateString()}</p>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-bold text-white text-lg">1. Information We Collect</h3>
+                  <p>We collect information you provide directly to us, including:</p>
+                  <ul className="list-disc pl-6 space-y-2 mt-2 marker:text-orange-500">
+                    <li>Name and contact information (email, phone number)</li>
+                    <li>Delivery address</li>
+                    <li>Order details and preferences</li>
+                    <li>Payment information (processed securely by our third-party payment providers)</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-bold text-white text-lg">2. How We Use Your Information</h3>
+                  <p>We use the information we collect to:</p>
+                  <ul className="list-disc pl-6 space-y-2 mt-2 marker:text-orange-500">
+                    <li>Process and deliver your food orders</li>
+                    <li>Send you order confirmations and updates</li>
+                    <li>Send you newsletters and marketing communications (if you subscribe)</li>
+                    <li>Improve our services and website experience</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-bold text-white text-lg">3. Data Security</h3>
+                  <p>
+                    We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.
+                  </p>
+                </div>
+
+                <div className="space-y-4 border-t border-gray-700 pt-6">
+                  <h3 className="font-bold text-white text-lg">Contact Us</h3>
+                  <p>
+                    If you have any questions about this Privacy Policy, please contact us at:
                   </p>
                   <div className="bg-gray-800 p-4 rounded-xl space-y-2">
                     <p className="flex items-center gap-2"><MailIcon size={16} className="text-orange-500" /> noadelights@yahoo.com</p>
