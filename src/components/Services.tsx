@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Users2Icon, CalendarIcon, ChefHatIcon, X, ImagesIcon, PlayIcon, ChevronLeft, ChevronRight, VolumeX } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
-import emailjs from '@emailjs/browser';
+import { sendOrderEmail } from '../services/emailService';
 
 // Type definitions
 type SoupOrProteinOrRice = {
@@ -118,12 +118,12 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div 
+      <div
         ref={modalRef}
         className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
       >
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
           aria-label="Close modal"
         >
@@ -147,7 +147,7 @@ const CustomVideoPlayer = ({ src }: { src: string }) => {
       // Ensure video is always muted
       videoRef.current.muted = true;
       videoRef.current.volume = 0;
-      
+
       // Remove any volume controls from the video element
       const video = videoRef.current;
       video.removeAttribute('controls');
@@ -206,8 +206,8 @@ const CustomVideoPlayer = ({ src }: { src: string }) => {
 const EventGallery = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState<'all' | 'images' | 'videos'>('all');
-  const [videoThumbnails, setVideoThumbnails] = useState<{[key: string]: string}>({});
-  const [loadingThumbnails, setLoadingThumbnails] = useState<{[key: string]: boolean}>({});
+  const [videoThumbnails, setVideoThumbnails] = useState<{ [key: string]: string }>({});
+  const [loadingThumbnails, setLoadingThumbnails] = useState<{ [key: string]: boolean }>({});
 
   // Event media
   const eventMedia: MediaItem[] = [
@@ -292,44 +292,44 @@ const EventGallery = () => {
       video.preload = 'metadata';
       video.muted = true;
       video.playsInline = true;
-      
+
       // Set current time to 0.1 seconds to ensure we get a frame
       video.currentTime = 0.1;
-      
+
       video.onloadeddata = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
+
         if (!ctx) {
           reject(new Error('Could not get canvas context'));
           return;
         }
-        
+
         // Set canvas dimensions to match video dimensions
         canvas.width = video.videoWidth || 320;
         canvas.height = video.videoHeight || 180;
-        
+
         // Draw the video frame to canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
+
         // Convert canvas to data URL
         const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        
+
         // Update state with new thumbnail
         setVideoThumbnails(prev => ({ ...prev, [videoSrc]: dataUrl }));
         setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: false }));
-        
+
         // Clean up
         video.remove();
         resolve(dataUrl);
       };
-      
+
       video.onerror = () => {
         setLoadingThumbnails(prev => ({ ...prev, [videoSrc]: false }));
         video.remove();
         reject(new Error('Failed to load video for thumbnail'));
       };
-      
+
       // Start loading the video
       video.src = videoSrc;
     });
@@ -338,7 +338,7 @@ const EventGallery = () => {
   // Effect to generate thumbnails for videos on component mount
   useEffect(() => {
     const videoItems = eventMedia.filter(item => item.type === 'video');
-    
+
     videoItems.forEach(item => {
       if (!videoThumbnails[item.src] && !loadingThumbnails[item.src]) {
         generateVideoThumbnail(item.src).catch(error => {
@@ -407,8 +407,8 @@ const EventGallery = () => {
 
     if (thumbnail) {
       return (
-        <img 
-          src={thumbnail} 
+        <img
+          src={thumbnail}
           alt="Video thumbnail"
           className="w-full h-full object-cover"
         />
@@ -440,33 +440,30 @@ const EventGallery = () => {
 
         {/* Filter buttons */}
         <div className="flex justify-center mb-8 space-x-4">
-          <button 
+          <button
             onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 rounded-md text-sm transition-colors ${
-              activeFilter === 'all' 
-                ? 'bg-orange-600 text-white' 
+            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeFilter === 'all'
+                ? 'bg-orange-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+              }`}
           >
             All Media
           </button>
-          <button 
+          <button
             onClick={() => setActiveFilter('images')}
-            className={`px-4 py-2 rounded-md text-sm transition-colors ${
-              activeFilter === 'images' 
-                ? 'bg-orange-600 text-white' 
+            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeFilter === 'images'
+                ? 'bg-orange-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+              }`}
           >
             Images
           </button>
-          <button 
+          <button
             onClick={() => setActiveFilter('videos')}
-            className={`px-4 py-2 rounded-md text-sm transition-colors ${
-              activeFilter === 'videos' 
-                ? 'bg-orange-600 text-white' 
+            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeFilter === 'videos'
+                ? 'bg-orange-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+              }`}
           >
             Videos
           </button>
@@ -486,7 +483,7 @@ const EventGallery = () => {
             {hasMedia ? (
               <>
                 {/* Previous button */}
-                <button 
+                <button
                   onClick={handlePrev}
                   className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all z-10"
                   aria-label="Previous"
@@ -497,8 +494,8 @@ const EventGallery = () => {
                 {/* Media content */}
                 <div className="flex items-center justify-center min-h-[500px]">
                   {currentMedia.type === 'image' ? (
-                    <img 
-                      src={currentMedia.src} 
+                    <img
+                      src={currentMedia.src}
                       alt="Event gallery"
                       className="w-full h-auto max-h-[500px] object-contain"
                       onError={(e) => {
@@ -512,7 +509,7 @@ const EventGallery = () => {
                 </div>
 
                 {/* Next button */}
-                <button 
+                <button
                   onClick={handleNext}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all z-10"
                   aria-label="Next"
@@ -546,15 +543,14 @@ const EventGallery = () => {
                 <button
                   key={`${media.src}-${index}`}
                   onClick={() => handleThumbnailClick(index)}
-                  className={`flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden border-2 transition-all relative ${
-                    index === selectedIndex 
-                      ? 'border-orange-600 ring-2 ring-orange-400' 
+                  className={`flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden border-2 transition-all relative ${index === selectedIndex
+                      ? 'border-orange-600 ring-2 ring-orange-400'
                       : 'border-transparent hover:border-gray-400'
-                  }`}
+                    }`}
                 >
                   {media.type === 'image' ? (
-                    <img 
-                      src={media.src} 
+                    <img
+                      src={media.src}
                       alt={`Event ${index + 1}`}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -596,9 +592,9 @@ const EventGallery = () => {
           <p className="text-gray-500">
             Want to see more or discuss your own event? Contact us today!
           </p>
-          <a 
-            href="https://wa.me/447405336637" 
-            target="_blank" 
+          <a
+            href="https://wa.me/447405336637"
+            target="_blank"
             rel="noopener noreferrer"
             className="inline-block mt-6 bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 transition-colors"
           >
@@ -626,10 +622,10 @@ const OrderFormIndividual = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
-  const [status, setStatus] = useState<StatusState>({ 
-    message: "", 
-    isError: false, 
-    whatsappUrl: "" 
+  const [status, setStatus] = useState<StatusState>({
+    message: "",
+    isError: false,
+    whatsappUrl: ""
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -701,38 +697,33 @@ const OrderFormIndividual = () => {
     const message = generateWhatsAppMessage();
 
     try {
-      await emailjs.send(
-        "service_r34v7ej", 
-        "template_35bo6df", 
-        { ...form, total: calculateTotal() }, 
-        "onJvAPlkarQjORVmb"
-      );
+      await sendOrderEmail({ ...form, total: calculateTotal() });
 
       try {
         openWhatsApp(message);
         setStatus({ message: "Order sent. WhatsApp opened.", isError: false, whatsappUrl: "" });
       } catch {
-        setStatus({ 
-          message: "Email sent! Click below to open WhatsApp.", 
-          isError: false, 
-          whatsappUrl: `https://wa.me/447405336637?text=${encodeURIComponent(message)}` 
+        setStatus({
+          message: "Email sent! Click below to open WhatsApp.",
+          isError: false,
+          whatsappUrl: `https://wa.me/447405336637?text=${encodeURIComponent(message)}`
         });
       }
 
-      setForm({ 
-        name: "", 
-        phone: "", 
-        email: "", 
-        order: "", 
-        address: "", 
-        to_email: "Noadelights@yahoo.com", 
-        items: [] 
+      setForm({
+        name: "",
+        phone: "",
+        email: "",
+        order: "",
+        address: "",
+        to_email: "Noadelights@yahoo.com",
+        items: []
       });
     } catch (error) {
-      setStatus({ 
-        message: "Error submitting. Try WhatsApp below.", 
-        isError: true, 
-        whatsappUrl: `https://wa.me/447405336637?text=${encodeURIComponent(message)}` 
+      setStatus({
+        message: "Error submitting. Try WhatsApp below.",
+        isError: true,
+        whatsappUrl: `https://wa.me/447405336637?text=${encodeURIComponent(message)}`
       });
     }
   };
@@ -741,36 +732,36 @@ const OrderFormIndividual = () => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <h2 className="text-xl font-bold text-orange-600 text-center">Place Your Order</h2>
 
-      <input 
-        name="name" 
-        placeholder="Full Name" 
-        required 
-        onChange={handleChange} 
-        value={form.name} 
-        className="w-full border px-4 py-2 rounded-md" 
+      <input
+        name="name"
+        placeholder="Full Name"
+        required
+        onChange={handleChange}
+        value={form.name}
+        className="w-full border px-4 py-2 rounded-md"
       />
-      <input 
-        name="phone" 
-        placeholder="Phone Number" 
-        required 
-        onChange={handleChange} 
-        value={form.phone} 
-        className="w-full border px-4 py-2 rounded-md" 
+      <input
+        name="phone"
+        placeholder="Phone Number"
+        required
+        onChange={handleChange}
+        value={form.phone}
+        className="w-full border px-4 py-2 rounded-md"
       />
-      <input 
-        name="email" 
-        placeholder="Email" 
-        required 
-        type="email" 
-        onChange={handleChange} 
-        value={form.email} 
-        className="w-full border px-4 py-2 rounded-md" 
+      <input
+        name="email"
+        placeholder="Email"
+        required
+        type="email"
+        onChange={handleChange}
+        value={form.email}
+        className="w-full border px-4 py-2 rounded-md"
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <select 
-          value={selectedCategory} 
-          onChange={(e) => setSelectedCategory(e.target.value as keyof MenuData)} 
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value as keyof MenuData)}
           className="border p-2 rounded"
         >
           {Object.keys(menuData).map((cat) => (
@@ -780,9 +771,9 @@ const OrderFormIndividual = () => {
           ))}
         </select>
 
-        <select 
-          value={selectedItem} 
-          onChange={(e) => setSelectedItem(e.target.value)} 
+        <select
+          value={selectedItem}
+          onChange={(e) => setSelectedItem(e.target.value)}
           className="border p-2 rounded"
         >
           <option value="">Select item</option>
@@ -794,9 +785,9 @@ const OrderFormIndividual = () => {
         </select>
 
         {selectedItem && (menuData[selectedCategory] as SoupOrProteinOrRice[]).find((i) => i.name === selectedItem)?.sizes ? (
-          <select 
-            value={selectedSize} 
-            onChange={(e) => setSelectedSize(e.target.value)} 
+          <select
+            value={selectedSize}
+            onChange={(e) => setSelectedSize(e.target.value)}
             className="border p-2 rounded"
           >
             <option value="">Select size</option>
@@ -811,18 +802,18 @@ const OrderFormIndividual = () => {
           </select>
         ) : null}
 
-        <input 
-          type="number" 
-          min="1" 
-          value={quantity} 
-          onChange={(e) => setQuantity(Number(e.target.value) || 1)} 
-          className="border p-2 rounded" 
+        <input
+          type="number"
+          min="1"
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value) || 1)}
+          className="border p-2 rounded"
         />
       </div>
 
-      <button 
-        type="button" 
-        onClick={addItemToOrder} 
+      <button
+        type="button"
+        onClick={addItemToOrder}
         className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition"
       >
         Add to Order
@@ -835,9 +826,9 @@ const OrderFormIndividual = () => {
             <div key={i} className="flex justify-between mb-1">
               <span>{item.description} × {item.quantity}</span>
               <span>£{item.price}</span>
-              <button 
-                type="button" 
-                className="text-red-500" 
+              <button
+                type="button"
+                className="text-red-500"
                 onClick={() => removeItem(i)}
                 aria-label="Remove item"
               >
@@ -849,18 +840,18 @@ const OrderFormIndividual = () => {
         </div>
       )}
 
-      <textarea 
-        name="address" 
-        placeholder="Delivery Address" 
-        required 
-        rows={3} 
-        value={form.address} 
-        onChange={handleChange} 
-        className="w-full border p-3 rounded" 
+      <textarea
+        name="address"
+        placeholder="Delivery Address"
+        required
+        rows={3}
+        value={form.address}
+        onChange={handleChange}
+        className="w-full border p-3 rounded"
       />
 
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         className="w-full bg-orange-600 text-white font-bold py-3 rounded hover:bg-orange-700 transition"
       >
         Submit Order
@@ -870,10 +861,10 @@ const OrderFormIndividual = () => {
         <p className={`mt-4 text-center ${status.isError ? "text-red-500" : "text-green-600"}`}>
           {status.message}
           {status.whatsappUrl && (
-            <a 
-              href={status.whatsappUrl} 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href={status.whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="ml-2 inline-flex items-center text-blue-600 hover:underline"
             >
               <FaWhatsapp className="mr-1" /> Open WhatsApp
@@ -930,15 +921,15 @@ export function Services() {
                   <span>Delivery</span>
                 </li>
               </ul>
-              
-              <button 
+
+              <button
                 onClick={() => setIsModalOpen(true)}
                 className="mt-6 bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors"
               >
                 Book Now
               </button>
             </div>
-            
+
             {/* Event Catering */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
@@ -965,7 +956,7 @@ export function Services() {
                   <span>Event coordination</span>
                 </li>
               </ul>
-              
+
               <div className="mt-6 flex flex-col gap-3">
                 <a href="https://forms.gle/pThaZWnfJS8G6ZpA8" target="_blank" rel="noopener noreferrer" className="w-full">
                   <button className="w-full bg-orange-600 text-white px-4 py-2 rounded-md text-sm hover:bg-orange-700 transition-colors">
@@ -974,7 +965,7 @@ export function Services() {
                 </a>
               </div>
             </div>
-            
+
             {/* Online Booking */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">

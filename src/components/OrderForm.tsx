@@ -1,6 +1,8 @@
 // import { useState } from "react";
 // import { FaWhatsapp } from "react-icons/fa";
-// import emailjs from "@emailjs/browser";
+// import { useState } from "react";
+// import { FaWhatsapp } from "react-icons/fa";
+// import { sendOrderEmail } from "../services/emailService";
 
 // type SoupOrProteinOrRice = {
 //   name: string;
@@ -171,7 +173,7 @@
 //     const message = generateWhatsAppMessage();
 
 //     try {
-//       await emailjs.send("service_r34v7ej", "template_35bo6df", { ...form, total: calculateTotal() }, "onJvAPlkarQjORVmb");
+//       await sendOrderEmail({ ...form, total: calculateTotal() });
 
 //       try {
 //         openWhatsApp(message);
